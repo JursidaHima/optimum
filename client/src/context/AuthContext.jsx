@@ -29,9 +29,9 @@ export function AuthProvider({ children }) {
     return next;
   }
 
-  async function register(fullName, email, password) {
-    return authApi.register(fullName, email, password);
-  }
+  async function register(userData) {
+  return authApi.register(userData);
+}
 
   async function logout() {
     try { await authApi.logout(); } catch { /* best-effort */ }

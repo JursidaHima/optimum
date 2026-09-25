@@ -81,7 +81,7 @@ export default function Projects() {
               <h3>{p.project_name}</h3>
               <p>{p.description || "No description."} \u00b7 {p.model_count} model{p.model_count === 1 ? "" : "s"}</p>
               <div className="entity-card__actions">
-                <Link to={`/dashboard/projects/${p.project_id}/model`} className="btn btn--primary btn--sm">Open</Link>
+               <Link to="/dashboard/model-builder" className="btn btn--primary btn--sm">  Open</Link>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => openEdit(p)}>Edit</button>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => onDelete(p)}>Delete</button>
               </div>

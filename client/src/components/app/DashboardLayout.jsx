@@ -10,9 +10,10 @@ export default function DashboardLayout() {
         <Link to="/" className="logo">Optimum</Link>
         <nav>
           <Link to="/dashboard" className="app-sidebar__link">Projects</Link>
+          <Link to="/dashboard/model-builder" className="app-sidebar__link" >Model Builder</Link>
         </nav>
         <div className="app-sidebar__foot">
-          <p>{user.fullName}<br /><span style={{ opacity: 0.7 }}>{user.email}</span></p>
+          <p>  {user.name} {user.surname}<br /><span style={{ opacity: 0.7 }}>{user.email}</span></p>
           <button type="button" className="btn btn--ghost btn--sm btn--block" onClick={logout}>Log out</button>
         </div>
       </aside>
