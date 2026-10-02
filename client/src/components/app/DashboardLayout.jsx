@@ -9,8 +9,9 @@ export default function DashboardLayout() {
       <aside className="app-sidebar">
         <Link to="/" className="logo">Optimum</Link>
         <nav>
-          <Link to="/dashboard" className="app-sidebar__link">Projects</Link>
-          <Link to="/dashboard/model-builder" className="app-sidebar__link" >Model Builder</Link>
+          <Link to="/dashboard" className="app-sidebar__link">Projects</Link> <br />
+          <Link to="/dashboard/model-builder" className="app-sidebar__link" >Model Builder</Link> <br />
+          <Link to="/dashboard/data-upload" className="app-sidebar__link" >Data Upload</Link><br />
         </nav>
         <div className="app-sidebar__foot">
           <p>  {user.name} {user.surname}<br /><span style={{ opacity: 0.7 }}>{user.email}</span></p>

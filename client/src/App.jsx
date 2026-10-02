@@ -13,6 +13,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Projects from "./pages/Projects.jsx";
 import ModelBuilder from "./pages/ModelBuilder";
+import DataUpload from "./pages/DataUpload.jsx";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
   <Route path="dashboard" element={<DashboardLayout />}>
     <Route index element={<Projects />} />
     <Route path="model-builder" element={<ModelBuilder />} />
+  <Route path="data-upload" element={<DataUpload />} />
   </Route>
 </Route>
 

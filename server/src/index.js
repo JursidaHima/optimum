@@ -6,6 +6,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
 import projectsRoutes from "./routes/projectsRoutes.js";
 import modelsRoutes from "./routes/modelsRoutes.js";
+import datasetsRoutes from "./routes/datasetsRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectsRoutes);
 app.use("/api", modelsRoutes);//to make match the route for modelsRoutes, we can use /api as the base path
+app.use("/api", datasetsRoutes);//to make match the route for datasetsRoutes, we can use /api as the base path
 // GET /  Root Route
 app.get("/", (req, res) => {
   res.json({ message: "Optimum API is running successfully!" });

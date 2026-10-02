@@ -101,3 +101,32 @@ CREATE TABLE Model_Constraints (
         REFERENCES Models(model_id)
         ON DELETE CASCADE
 );
+
+
+-- Portfolio Data Upload 
+CREATE TABLE IF NOT EXISTS Datasets (
+    dataset_id INT PRIMARY KEY AUTO_INCREMENT,
+    project_id INT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    row_count INT NOT NULL,
+    uploaded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_datasets_project
+        FOREIGN KEY (project_id)
+        REFERENCES Projects(project_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Portfolio_Rows (
+    row_id INT PRIMARY KEY AUTO_INCREMENT,
+    dataset_id INT NOT NULL,
+    ticker_or_asset VARCHAR(50) NOT NULL,
+    historical_return DECIMAL(8,4) NOT NULL,
+    volatility DECIMAL(8,4) NOT NULL,
+
+    CONSTRAINT fk_portfolio_rows_dataset
+        FOREIGN KEY (dataset_id)
+        REFERENCES Datasets(dataset_id)
+        ON DELETE CASCADE
+);

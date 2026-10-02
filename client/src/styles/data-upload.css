@@ -1,0 +1,33 @@
+.data-upload { width: 100%; max-width: 1200px; margin: 0 auto; }
+.data-upload__header { display: flex; justify-content: space-between; gap: 2rem; align-items: flex-start; margin-bottom: 2rem; }
+.data-upload__header h1 { margin-bottom: 0.5rem; }
+.data-upload__header p { color: #5c584c; max-width: 720px; margin: 0; }
+.data-upload__eyebrow { color: #0f766e !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; margin-bottom: 0.5rem !important; }
+.data-upload__section { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.data-upload__section-head { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 1.25rem; }
+.data-upload__section-head h2 { margin-bottom: 0.35rem; }
+.data-upload__section-head p { margin: 0; color: #64748b; }
+.data-upload select { width: 100%; max-width: 520px; padding: 0.7rem 0.85rem; border: 1.5px solid #d8d3c4; border-radius: 10px; font: inherit; background: #fff; }
+.data-upload__hint { color: #64748b; font-size: 0.9rem; }
+.data-upload__dropzone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 2rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; background: #f8fafc; }
+.data-upload__dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.data-upload__status { color: #0f766e; }
+.data-upload__warnings { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; }
+.data-upload__warnings ul { margin-bottom: 0; }
+.data-upload__table-wrap { overflow-x: auto; }
+.data-upload__table { width: 100%; border-collapse: collapse; min-width: 560px; }
+.data-upload__table th,
+.data-upload__table td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+.data-upload__table th { background: #f8fafc; font-size: 0.85rem; }
+.data-upload__dataset-list { list-style: none; padding: 0; margin: 0; }
+.data-upload__dataset-list li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid #e5e7eb; }
+.data-upload__dataset-list li > div { display: flex; gap: 1rem; }
+.data-upload__dataset-list span,
+.data-upload__dataset-list time { color: #64748b; font-size: 0.85rem; }
+.data-upload__empty { color: #64748b; }
+
+@media (max-width: 700px) {
+  .data-upload__header,
+  .data-upload__section-head { flex-direction: column; align-items: stretch; }
+  .data-upload__dataset-list li { flex-direction: column; }
+}
