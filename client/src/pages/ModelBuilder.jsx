@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/model-builder.css";
 
 import { projectsApi } from "../services/projectsApi";
 import { modelsApi } from "../services/modelsApi";
 
 export default function ModelBuilder() {
+  const navigate = useNavigate();
+
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState("");
 
@@ -290,9 +293,7 @@ export default function ModelBuilder() {
         ),
       });
 
-      setMessage(
-        "Model saved successfully."
-      );
+      setMessage("Model saved successfully.");
     } catch (err) {
       setError(
         err.message || "Unable to save the model."
@@ -307,7 +308,6 @@ export default function ModelBuilder() {
       <div className="model-builder__header">
         <div>
           <h1>Model Builder</h1>
-
           <p>
             Build and configure your Finance
             optimization model.
@@ -336,7 +336,6 @@ export default function ModelBuilder() {
           <div className="model-builder__section-header">
             <div>
               <h2>Project</h2>
-
               <p>
                 Select the project where this model
                 will be saved.
@@ -345,10 +344,7 @@ export default function ModelBuilder() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="project">
-              Project
-            </label>
-
+            <label htmlFor="project">Project</label>
             <select
               id="project"
               value={projectId}
@@ -380,7 +376,6 @@ export default function ModelBuilder() {
           <div className="model-builder__section-header">
             <div>
               <h2>Model Information</h2>
-
               <p>
                 Define the basic parameters for
                 your optimization model.
@@ -390,14 +385,10 @@ export default function ModelBuilder() {
 
           <div className="model-builder__grid">
             <div className="form-group">
-              <label htmlFor="modelName">
-                Model Name
-              </label>
-
+              <label htmlFor="modelName">Model Name</label>
               <input
                 id="modelName"
                 type="text"
-    
                 value={modelName}
                 onChange={(event) =>
                   setModelName(event.target.value)
@@ -406,10 +397,7 @@ export default function ModelBuilder() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="objectiveType">
-                Objective
-              </label>
-
+              <label htmlFor="objectiveType">Objective</label>
               <select
                 id="objectiveType"
                 value={objectiveType}
@@ -422,11 +410,9 @@ export default function ModelBuilder() {
                 <option value="Select Objective">
                   Select Objective
                 </option>
-
                 <option value="Maximize Return">
                   Maximize Return
                 </option>
-
                 <option value="Minimize Risk">
                   Minimize Risk
                 </option>
@@ -434,10 +420,7 @@ export default function ModelBuilder() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="totalBudget">
-                Total Budget
-              </label>
-
+              <label htmlFor="totalBudget">Total Budget</label>
               <input
                 id="totalBudget"
                 type="number"
@@ -446,9 +429,7 @@ export default function ModelBuilder() {
                 placeholder="100000"
                 value={totalBudget}
                 onChange={(event) =>
-                  setTotalBudget(
-                    event.target.value
-                  )
+                  setTotalBudget(event.target.value)
                 }
               />
             </div>
@@ -460,7 +441,6 @@ export default function ModelBuilder() {
           <div className="model-builder__section-header">
             <div>
               <h2>Assets</h2>
-
               <p>
                 Add the assets that can be used
                 by the optimization model.
@@ -483,9 +463,7 @@ export default function ModelBuilder() {
                 key={index}
               >
                 <div className="model-builder__asset-header">
-                  <h3>
-                    Asset {index + 1}
-                  </h3>
+                  <h3>Asset {index + 1}</h3>
 
                   {assets.length > 1 && (
                     <button
@@ -502,13 +480,9 @@ export default function ModelBuilder() {
 
                 <div className="model-builder__grid">
                   <div className="form-group">
-                    <label>
-                      Asset Name
-                    </label>
-
+                    <label>Asset Name</label>
                     <input
                       type="text"
-                    
                       value={asset.assetName}
                       onChange={(event) =>
                         updateAsset(
@@ -521,17 +495,12 @@ export default function ModelBuilder() {
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Expected Return (%)
-                    </label>
-
+                    <label>Expected Return (%)</label>
                     <input
                       type="number"
                       step="0.01"
                       placeholder="8"
-                      value={
-                        asset.expectedReturn
-                      }
+                      value={asset.expectedReturn}
                       onChange={(event) =>
                         updateAsset(
                           index,
@@ -543,10 +512,7 @@ export default function ModelBuilder() {
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Risk Score
-                    </label>
-
+                    <label>Risk Score</label>
                     <input
                       type="number"
                       step="0.01"
@@ -563,18 +529,13 @@ export default function ModelBuilder() {
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Minimum Allocation (%)
-                    </label>
-
+                    <label>Minimum Allocation (%)</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       step="0.01"
-                      value={
-                        asset.minAllocation
-                      }
+                      value={asset.minAllocation}
                       onChange={(event) =>
                         updateAsset(
                           index,
@@ -586,18 +547,13 @@ export default function ModelBuilder() {
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Maximum Allocation (%)
-                    </label>
-
+                    <label>Maximum Allocation (%)</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       step="0.01"
-                      value={
-                        asset.maxAllocation
-                      }
+                      value={asset.maxAllocation}
                       onChange={(event) =>
                         updateAsset(
                           index,
@@ -618,7 +574,6 @@ export default function ModelBuilder() {
           <div className="model-builder__section-header">
             <div>
               <h2>Constraints</h2>
-
               <p>
                 Define additional rules for the
                 optimization model.
@@ -640,112 +595,94 @@ export default function ModelBuilder() {
             </div>
           ) : (
             <div className="model-builder__constraints">
-              {constraints.map(
-                (constraint, index) => (
-                  <div
-                    className="model-builder__constraint"
-                    key={index}
-                  >
-                    <div className="form-group">
-                      <label>
-                        Constraint
-                      </label>
+              {constraints.map((constraint, index) => (
+                <div
+                  className="model-builder__constraint"
+                  key={index}
+                >
+                  <div className="form-group">
+                    <label>Constraint</label>
+                    <input
+                      type="text"
+                      value={constraint.constraintType}
+                      onChange={(event) =>
+                        updateConstraint(
+                          index,
+                          "constraintType",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
 
-                      <input
-                        type="text"
-                  
-                        value={
-                          constraint.constraintType
-                        }
-                        onChange={(event) =>
-                          updateConstraint(
-                            index,
-                            "constraintType",
-                            event.target.value
-                          )
-                        }
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label>
-                        Operator
-                      </label>
-
-                      <select
-                        value={
-                          constraint.operator
-                        }
-                        onChange={(event) =>
-                          updateConstraint(
-                            index,
-                            "operator",
-                            event.target.value
-                          )
-                        }
-                      >
-                        <option value="<=">
-                          Less than or equal to
-                        </option>
-
-                        <option value=">=">
-                          Greater than or equal to
-                        </option>
-
-                        <option value="=">
-                          Equal to
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label>
-                        Target Value
-                      </label>
-
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={
-                          constraint.targetValue
-                        }
-                        onChange={(event) =>
-                          updateConstraint(
-                            index,
-                            "targetValue",
-                            event.target.value
-                          )
-                        }
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      className="model-builder__remove"
-                      onClick={() =>
-                        removeConstraint(index)
+                  <div className="form-group">
+                    <label>Operator</label>
+                    <select
+                      value={constraint.operator}
+                      onChange={(event) =>
+                        updateConstraint(
+                          index,
+                          "operator",
+                          event.target.value
+                        )
                       }
                     >
-                      Remove
-                    </button>
+                      <option value="<=">
+                        Less than or equal to
+                      </option>
+                      <option value=">=">
+                        Greater than or equal to
+                      </option>
+                      <option value="=">
+                        Equal to
+                      </option>
+                    </select>
                   </div>
-                )
-              )}
+
+                  <div className="form-group">
+                    <label>Target Value</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={constraint.targetValue}
+                      onChange={(event) =>
+                        updateConstraint(
+                          index,
+                          "targetValue",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className="model-builder__remove"
+                    onClick={() => removeConstraint(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </section>
 
-        {/* SAVE */}
+        {/* SAVE & ACTIONS */}
         <div className="model-builder__actions">
-          <button
-            type="submit"
-            className="btn btn--primary"
-            disabled={saving || loadingModel}
-          >
-            {saving
-              ? "Saving Model..."
-              : "Save Model"}
+          <button type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Save Model"}
           </button>
+
+          {/* <button
+            type="button"
+            onClick={() =>
+              navigate(`/dashboard/projects/${projectId}/run`)
+            }
+            disabled={!projectId}
+          >
+            Run Optimization
+          </button> */}
         </div>
       </form>
     </main>

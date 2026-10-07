@@ -2,6 +2,7 @@ import { apiRequest } from "./api";
 
 export const projectsApi = {
   list: () => apiRequest("/projects"),
+  getAll: () => apiRequest("/projects"),
   get: (id) => apiRequest(`/projects/${id}`),
   create: (body) =>
     apiRequest("/projects", {

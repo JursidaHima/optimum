@@ -43,9 +43,8 @@ function createToken(user) {
   };
 }
 
-//
 // POST /api/auth/register { name, surname, email, password }
-//
+
 export async function register(req, res) {
   const { name = "", surname = "", email = "", password = "" } = req.body;
 
@@ -58,13 +57,13 @@ export async function register(req, res) {
 
   const cleanEmail = email.trim().toLowerCase();
 
-  //  Check if email is already registered
+  // Check if email is already registered
   const existing = await query("SELECT user_id FROM Users WHERE email = ?", [
     cleanEmail,
   ]);
   if (existing.length) throw new ApiError(409, MESSAGES.emailExists, "email");
 
-  //  Hash password and save user
+  // Hash password and save user
   const passwordHash = await bcrypt.hash(password, 10);
   const result = await query(
     "INSERT INTO Users (name, surname, email, password_hash, role_id, status) VALUES (?, ?, ?, ?, ?, ?)",
@@ -91,19 +90,18 @@ export async function register(req, res) {
 }
 
 // POST /api/auth/login { email, password }
-
 export async function login(req, res) {
   const { email = "", password = "" } = req.body;
   const cleanEmail = email.trim().toLowerCase();
 
-  //  Find user by email and include their role
+  // Find user by email and include their role
   const users = await query(
     `SELECT u.*, r.role_name FROM Users u JOIN Roles r ON r.role_id = u.role_id WHERE u.email = ?`,
     [cleanEmail],
   );
   const user = users[0];
 
-  //  Validate password match
+  // Validate password match
   if (!user || !(await bcrypt.compare(password, user.password_hash))) {
     throw new ApiError(401, MESSAGES.badCredentials);
   }
@@ -113,7 +111,7 @@ export async function login(req, res) {
     throw new ApiError(403, MESSAGES.accountSuspended);
   }
 
-  //  Create token and save session record
+  // Create token and save session record
   const { token, expiresAt } = createToken(user);
   await query(
     "INSERT INTO Sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)",
@@ -131,4 +129,17 @@ export async function login(req, res) {
 export async function logout(req, res) {
   // Stateless JWT logout returns a 204 No Content response
   res.status(204).send();
+}
+
+// POST /api/auth/refresh (requires a valid token)
+export async function refresh(req, res) {
+  const [user] = await query(
+    `SELECT u.*, r.role_name FROM Users u JOIN Roles r ON r.role_id = u.role_id WHERE u.user_id = ?`,
+    [req.user.id],
+  );
+  if (!user || user.status === "Suspended") {
+    throw new ApiError(401, MESSAGES.sessionExpired);
+  }
+  const { token, expiresAt } = createToken(user);
+  res.json({ token, user: formatUser(user), expiresAt });
 }

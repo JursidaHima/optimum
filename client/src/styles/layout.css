@@ -32,7 +32,14 @@
 .logo__tile { 
   color: #0f766e; 
 }
-
+hero__badge {
+  font-weight: 600;
+  color: #0f766e;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 .site-footer { 
   padding: 2rem 1.5rem; 
   border-top: 1px solid #d8d3c4; 

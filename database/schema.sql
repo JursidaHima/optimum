@@ -130,3 +130,92 @@ CREATE TABLE IF NOT EXISTS Portfolio_Rows (
         REFERENCES Datasets(dataset_id)
         ON DELETE CASCADE
 );
+
+-- Optimization Runs Table /space for  multiple solver engines
+CREATE TABLE IF NOT EXISTS Optimization_Runs (
+    run_id INT PRIMARY KEY AUTO_INCREMENT,
+    project_id INT NOT NULL,
+    model_id INT NOT NULL,
+    solver_name VARCHAR(50) NOT NULL DEFAULT 'HiGHS', -- space  for future solvers
+    
+    status ENUM(
+        'Pending',
+        'Running',
+        'Completed',
+        'Failed'
+    ) NOT NULL DEFAULT 'Pending',
+
+    objective_value DECIMAL(18,6) NULL,
+    total_allocated DECIMAL(15,2) NULL,
+    total_return DECIMAL(18,6) NULL,
+    total_risk DECIMAL(18,6) NULL,
+
+    error_message TEXT NULL,
+
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    started_at DATETIME NULL,
+    completed_at DATETIME NULL,
+
+    CONSTRAINT fk_runs_project
+        FOREIGN KEY (project_id)
+        REFERENCES Projects(project_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_runs_model
+        FOREIGN KEY (model_id)
+        REFERENCES Models(model_id)
+        ON DELETE CASCADE
+);
+
+--  Normalized Optimization Results :Asset-level performance contributions
+CREATE TABLE IF NOT EXISTS Optimization_Results (
+    result_id INT PRIMARY KEY AUTO_INCREMENT,
+    run_id INT NOT NULL,
+    asset_id INT NOT NULL,
+
+    allocation_amount DECIMAL(15,2) NOT NULL,
+    allocation_percent DECIMAL(8,4) NOT NULL,
+
+    expected_return_contribution DECIMAL(18,6) NOT NULL,
+    risk_contribution DECIMAL(18,6) NOT NULL,
+
+    CONSTRAINT fk_results_run
+        FOREIGN KEY (run_id)
+        REFERENCES Optimization_Runs(run_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_results_asset
+        FOREIGN KEY (asset_id)
+        REFERENCES Model_Assets(asset_id)
+        ON DELETE CASCADE
+);
+
+--  Asset Allocations Summary Table
+CREATE TABLE IF NOT EXISTS Asset_Allocations (
+    allocation_id INT PRIMARY KEY AUTO_INCREMENT,
+    run_id INT NOT NULL,
+    asset_name VARCHAR(100) NOT NULL,
+    allocated_amount DECIMAL(15,2) NOT NULL,
+    allocation_percentage DECIMAL(5,2) NOT NULL,
+
+    CONSTRAINT fk_alloc_run
+        FOREIGN KEY (run_id)
+        REFERENCES Optimization_Runs(run_id)
+        ON DELETE CASCADE
+);
+
+-- Constraint Satisfaction Checklist Table
+CREATE TABLE IF NOT EXISTS Run_Constraint_Results (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    run_id INT NOT NULL,
+    label VARCHAR(150) NOT NULL,
+    operator VARCHAR(10) NOT NULL,
+    target_value DECIMAL(15,4) NOT NULL,
+    actual_value DECIMAL(15,4) NOT NULL,
+    satisfied TINYINT(1) NOT NULL,
+
+    CONSTRAINT fk_cres_run
+        FOREIGN KEY (run_id)
+        REFERENCES Optimization_Runs(run_id)
+        ON DELETE CASCADE
+);

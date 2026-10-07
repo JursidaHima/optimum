@@ -13,7 +13,7 @@ export function requireAuth(req, res, next) {
       id: payload.sub,
       role: payload.role,
       email: payload.email,
-      fullName: payload.fullName,
+      name: payload.name,
     };
     next();
   } catch {
@@ -28,7 +28,7 @@ export function requireAdmin(req, res, next) {
     return res.status(403).json({ message: MESSAGES.accessDenied });
   }
 
-  //  Check if the user role  is Admin
+  // Check if the user role is Admin
   const userRole = req.user.role;
   if (userRole !== "Admin") {
     return res.status(403).json({ message: MESSAGES.accessDenied });

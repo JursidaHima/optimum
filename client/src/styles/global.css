@@ -132,10 +132,12 @@ h1, h2, h3 {
   margin-top: 0.3rem; 
 }
 
-.container { 
-  max-width: 1100px; 
-  margin: 0 auto; 
-  padding: 0 1.5rem; 
+
+.container {
+  width: 100%;
+  max-width: none;   /*  1100px */
+  margin: 0;         /*  0 auto */
+  padding: 0 4rem;
 }
 
 .skip-link { 

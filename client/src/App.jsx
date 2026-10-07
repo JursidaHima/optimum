@@ -14,6 +14,9 @@ import Register from "./pages/Register.jsx";
 import Projects from "./pages/Projects.jsx";
 import ModelBuilder from "./pages/ModelBuilder";
 import DataUpload from "./pages/DataUpload.jsx";
+import RunOptimization from "./pages/RunOptimization";
+import OptimizationResults from "./pages/OptimizationResults";
+import RunHistory from "./pages/RunHistory";
 
 export default function App() {
   return (
@@ -47,7 +50,15 @@ export default function App() {
   <Route path="dashboard" element={<DashboardLayout />}>
     <Route index element={<Projects />} />
     <Route path="model-builder" element={<ModelBuilder />} />
-  <Route path="data-upload" element={<DataUpload />} />
+    <Route path="data-upload" element={<DataUpload />} />
+    
+    {/* Standalone separate routes */}
+    <Route path="run-optimization" element={<RunOptimization />} />
+    <Route path="history" element={<RunHistory />} />
+
+    {/* Keep these if you still need specific project views */}
+    <Route path="projects/:projectId" element={<Projects />} />
+    <Route path="results/:runId" element={<OptimizationResults />} />
   </Route>
 </Route>
 
