@@ -1,0 +1,80 @@
+.run-history {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.run-history__header {
+  margin-bottom: 2rem;
+}
+
+.run-history__header p {
+  color: #666;
+}
+
+.run-history__card {
+  background: #fff;
+  border: 1px solid #ddd8cc;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.run-history__table-wrapper {
+  overflow-x: auto;
+}
+
+.run-history table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 950px;
+}
+
+.run-history th,
+.run-history td {
+  text-align: left;
+  padding: 0.85rem;
+  border-bottom: 1px solid #eee;
+}
+
+.run-history__status {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.run-history__status--completed {
+  background: #e6f4ea;
+  color: #176b2c;
+}
+
+.run-history__status--failed {
+  background: #fbeaea;
+  color: #9b1c1c;
+}
+
+.run-history__status--running {
+  background: #fff4d6;
+  color: #765600;
+}
+
+.run-history__status--pending {
+  background: #eee;
+  color: #555;
+}
+
+.run-history__empty {
+  background: #fff;
+  border: 1px solid #ddd8cc;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+}
+
+.run-history__error {
+  padding: 1rem;
+  background: #fbeaea;
+  color: #9b1c1c;
+  border-radius: 8px;
+}
