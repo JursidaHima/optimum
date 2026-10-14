@@ -51,6 +51,12 @@ h1, h2, h3 {
   background: #f2f0e8; 
 }
 
+/* Ghost button for light backgrounds (the default ghost button is built for the dark sidebar) */
+.btn--ghost.btn--dark {
+  border-color: #12263f;
+  color: #12263f;
+}
+
 .btn--sm { 
   padding: 0.45rem 0.9rem; 
   font-size: 0.85rem; 

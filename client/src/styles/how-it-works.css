@@ -1,0 +1,65 @@
+.how__hero-copy {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.how__lead {
+  margin: 0 auto 1.5rem;
+}
+
+.how__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.how__step {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.how__num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.how__card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.how__card-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.how__benefits {
+  background-color: #f8fafc;
+  padding: 4rem 0;
+}
+
+.how__benefits-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #111827;
+}
+
+@media (max-width: 900px) {
+  .how__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .how__grid { grid-template-columns: 1fr; }
+}

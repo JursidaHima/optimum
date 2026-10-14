@@ -1,3 +1,4 @@
+import "../styles/how-it-works.css";
 const STEPS = [
   {
     num: "1",
@@ -45,14 +46,14 @@ export default function HowItWorks() {
     <>
       <section className="hero">
         <div className="container">
-          <div className="hero__copy" style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
-            <div className="hero__badge" style={{ fontWeight: 600, color: "#0f766e", marginBottom: "0.75rem", fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <div className="hero__copy how__hero-copy">
+            <div className="hero__badge">
               How it works
             </div>
             
             <h1>Get the best results in 4 simple steps</h1>
             
-            <p className="lead" style={{ margin: "0 auto 1.5rem" }}>
+            <p className="lead how__lead">
               From your goals to optimized results — it's easy.
             </p>
           </div>
@@ -61,15 +62,15 @@ export default function HowItWorks() {
 
       <section className="section">
         <div className="container">
-          <ul className="card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem", listStyle: "none", padding: 0, margin: 0 }}>
+          <ul className="card-grid how__grid">
             {STEPS.map((step) => (
-              <li key={step.num} className="info-card" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div style={{ width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "0.9rem" }}>
+              <li key={step.num} className="info-card how__step">
+                <div className="how__num">
                   {step.num}
                 </div>
                 <div>
-                  <h3 style={{ marginBottom: "0.5rem", fontSize: "1.1rem" }}>{step.title}</h3>
-                  <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--ink-soft)" }}>{step.text}</p>
+                  <h3 className="how__card-title">{step.title}</h3>
+                  <p className="how__card-text">{step.text}</p>
                 </div>
               </li>
             ))}
@@ -77,14 +78,14 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      <section className="section" style={{ backgroundColor: "#f8fafc", padding: "4rem 0" }}>
+      <section className="section how__benefits">
         <div className="container">
-          <h2 style={{ textAlign: "center", marginBottom: "2.5rem", color: "#111827" }}>Why choose Optimum?</h2>
-          <ul className="card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem", listStyle: "none", padding: 0, margin: 0 }}>
+          <h2 className="how__benefits-title">Why choose Optimum?</h2>
+          <ul className="card-grid how__grid">
             {BENEFITS.map((benefit) => (
               <li key={benefit.title} className="info-card">
-                <h3 style={{ marginBottom: "0.5rem", fontSize: "1.1rem" }}>{benefit.title}</h3>
-                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--ink-soft)" }}>{benefit.text}</p>
+                <h3 className="how__card-title">{benefit.title}</h3>
+                <p className="how__card-text">{benefit.text}</p>
               </li>
             ))}
           </ul>

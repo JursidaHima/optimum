@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import { query } from "../config/db.js";
 import { ApiError } from "../middleware/errorHandler.js";
 import { MESSAGES } from "../utils/messages.js";
+import { logAction } from "../utils/audit.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const DEFAULT_ROLE_ID = 2; // Matches the Roles table seeded in PART 12
@@ -12,7 +13,7 @@ const DEFAULT_ROLE_ID = 2; // Matches the Roles table seeded in PART 12
 const isStrongPassword = (v) =>
   v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /\d/.test(v);
 
-// Helper: Format user data for public response ,hides password hash
+// Helper: Format user data for public response, hides password hash
 function formatUser(user) {
   return {
     id: user.user_id,
@@ -44,7 +45,6 @@ function createToken(user) {
 }
 
 // POST /api/auth/register { name, surname, email, password }
-
 export async function register(req, res) {
   const { name = "", surname = "", email = "", password = "" } = req.body;
 
@@ -83,6 +83,9 @@ export async function register(req, res) {
     [result.insertId],
   );
 
+  // Log the registration action
+  await logAction(newUser.user_id, "REGISTER", `New account ${cleanEmail}.`);
+
   res.status(201).json({
     user: formatUser(newUser),
     message: MESSAGES.accountCreated,
@@ -117,6 +120,9 @@ export async function login(req, res) {
     "INSERT INTO Sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)",
     [crypto.randomUUID(), user.user_id, new Date(expiresAt)],
   );
+
+  // Log the login action
+  await logAction(user.user_id, "LOGIN", `Signed in as ${user.email}.`);
 
   res.json({
     token,

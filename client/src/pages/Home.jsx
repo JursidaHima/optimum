@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "../styles/home.css";
 
 const CARDS = [
   {
@@ -21,7 +22,7 @@ export default function Home() {
       <section className="hero">
         <div className="container hero__grid">
           <div className="hero__copy">
-            <div className="hero__badge" style={{ fontWeight: 600, color: "#0f766e", marginBottom: "0.75rem", fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <div className="hero__badge">
               Open mathematical optimization
             </div>
             
@@ -40,7 +41,7 @@ export default function Home() {
             <img 
               src="/herohome.png" 
               alt="Optimization" 
-              style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px", boxShadow: "var(--shadow)" }} 
+              className="home__hero-img"
             />
           </div>
         </div>

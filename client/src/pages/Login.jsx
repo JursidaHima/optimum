@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FormField from "../components/FormField.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import "../styles/auth.css";
 
 export default function Login() {
   const { login } = useAuth();
@@ -16,8 +17,8 @@ export default function Login() {
     setError("");
     setBusy(true);
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      const session = await login(email, password);
+      navigate(session.user.role === "Admin" ? "/admin" : "/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -26,7 +27,7 @@ export default function Login() {
   }
 
   return (
-    <section className="container" style={{ maxWidth: 420, paddingTop: "3rem" }}>
+    <section className="container auth-page">
       <h1>Log in</h1>
       {error && <p className="alert alert--error" role="alert">{error}</p>}
       <form onSubmit={onSubmit} noValidate>
@@ -40,7 +41,7 @@ export default function Login() {
           {busy ? "Logging in\u2026" : "Log in"}
         </button>
       </form>
-      <p style={{ marginTop: "1rem" }}>No account? <Link to="/register">Sign up</Link></p>
+      <p className="auth-page__alt">No account? <Link to="/register">Sign up</Link></p>
     </section>
   );
 }

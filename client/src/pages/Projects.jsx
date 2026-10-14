@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FormField from "../components/FormField.jsx";
 import { projectsApi } from "../services/projectsApi";
+import "../styles/projects.css";
 
 export default function Projects() {
   const [projects, setProjects] = useState(null);
@@ -62,7 +63,7 @@ export default function Projects() {
             <FormField label="Description" required={false}>
               {(p) => <input {...p} type="text" value={description} onChange={(e) => setDescription(e.target.value)} />}
             </FormField>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div className="form-actions">
               <button type="submit" className="btn btn--primary" disabled={busy}>Save</button>
               <button type="button" className="btn btn--ghost" onClick={() => setEditing(null)}>Cancel</button>
             </div>
@@ -71,7 +72,7 @@ export default function Projects() {
       )}
 
       {!projects ? (
-        <p>Loading\u2026</p>
+        <p>Loading…</p>
       ) : projects.length === 0 ? (
         <div className="empty-state panel"><p>No projects yet.</p></div>
       ) : (
@@ -79,7 +80,7 @@ export default function Projects() {
           {projects.map((p) => (
             <li key={p.project_id} className="entity-card">
               <h3>{p.project_name}</h3>
-              <p>{p.description || "No description."} \u00b7 {p.model_count} model{p.model_count === 1 ? "" : "s"}</p>
+              <p>{p.description || "No description."} · {p.model_count} model{p.model_count === 1 ? "" : "s"}</p>
               <div className="entity-card__actions">
                <Link to="/dashboard/model-builder" className="btn btn--primary btn--sm">  Open</Link>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => openEdit(p)}>Edit</button>

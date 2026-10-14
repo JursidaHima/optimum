@@ -1,0 +1,85 @@
+.docs {
+  padding: 3rem 1.5rem;
+}
+
+.docs__layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.docs__sidebar {
+  background: #f1f5f9;
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.docs__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.docs__nav-btn {
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 400;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.docs__nav-btn--active {
+  background: #e2e8f0;
+  font-weight: 600;
+}
+
+.docs__title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 2rem;
+}
+
+.docs__card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.docs__intro {
+  font-size: 1.05rem;
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.docs__steps {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.docs__steps span {
+  color: #1e293b;
+}
+
+.docs__link {
+  color: #0f766e;
+  text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+  .docs__layout { grid-template-columns: 1fr; gap: 1.5rem; }
+  .docs__title { font-size: 2rem; }
+  .docs__card { padding: 1.5rem; }
+}

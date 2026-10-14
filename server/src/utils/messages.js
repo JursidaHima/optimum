@@ -20,6 +20,19 @@ export const MESSAGES = {
   allocationMinMax: "Minimum allocation cannot exceed maximum allocation.",
   modelSaved: "Model saved.",
 
+  // Admin
+  userUpdated: "User updated.",
+  userSuspended: "User suspended.",
+  userReactivated: "User reactivated.",
+  cannotSuspendSelf: "You cannot suspend your own account.",
+  cannotSuspendAdmin: "Administrator accounts cannot be suspended.",
+  templateCreated: "Template created.",
+  templateUpdated: "Template updated.",
+  templateDeleted: "Template deleted.",
+  templateInvalid: "Please fix the template details before saving.",
+  jobRetried: "Job re-submitted. A new run has been started.",
+  onlyFailedRetry: "Only failed jobs can be retried.",
+
   // general
   notFound: "Not found.",
   serverError: "Something went wrong. Please try again.",

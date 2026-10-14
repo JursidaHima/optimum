@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Header() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <header className="site-header">
@@ -10,7 +10,7 @@ export default function Header() {
         <img 
           src="/logofin.jpeg" 
           alt="Optimum" 
-          style={{ height: "32px", width: "auto", display: "block" }} 
+          className="logo__img"
         />
       </Link>
 
@@ -21,7 +21,7 @@ export default function Header() {
         <NavLink to="/documentation">Documentation</NavLink>
         
         {isAuthenticated ? (
-          <Link to="/dashboard" className="btn--sm">Dashboard</Link>
+          <Link to={user?.role === "Admin" ? "/admin" : "/dashboard"} className="btn--sm">Dashboard</Link>
         ) : (
           <>
             <Link to="/login">Log in</Link>

@@ -1,21 +1,25 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { projectsApi } from "../services/projectsApi";
 import { getRunHistory } from "../services/historyApi";
-import "../styles/optimization.css";
+import StatusBadge from "../components/StatusBadge.jsx";
+import { formatDateTime, formatPercent, isFinished, RUN_STATUSES } from "../utils/format";
+import "../styles/run-history.css";
+
+const ALL = "All statuses";
 
 export default function RunHistory() {
   const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All statuses");
+  const [selectedStatus, setSelectedStatus] = useState(ALL);
   const [history, setHistory] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [error, setError] = useState("");
 
-  //  Load projects on mount and default to the first project
+  // Load projects on mount and default to the first project
   useEffect(() => {
     async function loadProjects() {
       try {
@@ -34,67 +38,63 @@ export default function RunHistory() {
     loadProjects();
   }, []);
 
-  //  Fetch history whenever selectedProjectId changes
+  const loadHistory = useCallback(async (projectId, { quiet = false } = {}) => {
+    if (!quiet) setLoadingHistory(true);
+    setError("");
+    try {
+      const data = await getRunHistory(projectId);
+      setHistory(Array.isArray(data) ? data : data.runs || []);
+    } catch {
+      setError("Unable to load run history for this project.");
+      setHistory([]);
+    } finally {
+      if (!quiet) setLoadingHistory(false);
+    }
+  }, []);
+
+  // Fetch history whenever the selected project changes
   useEffect(() => {
     if (!selectedProjectId) {
       setHistory([]);
       return;
     }
+    loadHistory(selectedProjectId);
+  }, [selectedProjectId, loadHistory]);
 
-    async function loadHistoryForProject() {
-      setLoadingHistory(true);
-      setError("");
-      try {
-        const data = await getRunHistory(selectedProjectId);
-        setHistory(Array.isArray(data) ? data : data.history || data.runs || []);
-      } catch (err) {
-        setError("Unable to load run history for this project.");
-        setHistory([]);
-      } finally {
-        setLoadingHistory(false);
-      }
-    }
+  // Keep Pending / Running rows live until they finish.
+  const hasActive = history.some((run) => !isFinished(run.status));
+  useEffect(() => {
+    if (!hasActive || !selectedProjectId) return undefined;
+    const timer = setInterval(() => loadHistory(selectedProjectId, { quiet: true }), 3000);
+    return () => clearInterval(timer);
+  }, [hasActive, selectedProjectId, loadHistory]);
 
-    loadHistoryForProject();
-  }, [selectedProjectId]);
+  const filteredHistory = history.filter(
+    (run) => selectedStatus === ALL || run.status === selectedStatus,
+  );
 
-  // 3. Filter history runs based on the selected status dropdown
-  const filteredHistory = history.filter((run) => {
-    if (selectedStatus === "All statuses") return true;
-    return (run.status || "").toLowerCase() === selectedStatus.toLowerCase();
-  });
-
-  const selectedProjectName = projects.find(
-    (p) => String(p.project_id || p.id) === String(selectedProjectId)
-  )?.project_name || projects.find(
-    (p) => String(p.project_id || p.id) === String(selectedProjectId)
-  )?.name || "Project";
+  const selectedProject = projects.find(
+    (p) => String(p.project_id || p.id) === String(selectedProjectId),
+  );
+  const selectedProjectName = selectedProject?.project_name || selectedProject?.name || "Project";
 
   if (loadingProjects) {
-    return <div className="optimization">Loading projects...</div>;
+    return <div className="run-history">Loading projects...</div>;
   }
 
   return (
-    <main className="optimization">
-      <header className="optimization__header">
-        <div>
-          <h1>History</h1>
-          <p>Review your previous optimization runs.</p>
-        </div>
+    <main className="run-history">
+      <header className="run-history__header">
+        <h1>History</h1>
+        <p>Review your previous optimization runs.</p>
       </header>
 
-      {error && <div className="optimization__error">{error}</div>}
+      {error && <div className="run-history__error" role="alert">{error}</div>}
 
-      {/* Filter Bar */}
-      <section className="optimization__card" style={{ marginBottom: "1.5rem", display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <label style={{ fontWeight: "500" }}>Project:</label>
-          <select
-            value={selectedProjectId}
-            onChange={(e) => setSelectedProjectId(e.target.value)}
-            className="optimization__select"
-            style={{ padding: "0.4rem 0.75rem", borderRadius: "4px" }}
-          >
+      <section className="run-history__card run-history__filters">
+        <div className="run-history__filter">
+          <label htmlFor="history-project">Project:</label>
+          <select id="history-project" value={selectedProjectId} onChange={(e) => setSelectedProjectId(e.target.value)}>
             {projects.map((proj) => (
               <option key={proj.project_id || proj.id} value={proj.project_id || proj.id}>
                 {proj.project_name || proj.name}
@@ -103,26 +103,20 @@ export default function RunHistory() {
           </select>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <label style={{ fontWeight: "500" }}>Status:</label>
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="optimization__select"
-            style={{ padding: "0.4rem 0.75rem", borderRadius: "4px" }}
-          >
-            <option value="All statuses">All statuses</option>
-            <option value="Completed">Completed</option>
-            <option value="Failed">Failed</option>
-            <option value="Pending">Pending</option>
+        <div className="run-history__filter">
+          <label htmlFor="history-status">Status:</label>
+          <select id="history-status" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+            <option value={ALL}>{ALL}</option>
+            {RUN_STATUSES.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
           </select>
         </div>
       </section>
 
-      {/* History Table Container */}
-      <section className="optimization__card">
-        <p style={{ marginBottom: "1rem", fontSize: "0.9rem", color: "#666" }}>
-          Showing {filteredHistory.length} runs for {selectedProjectName}
+      <section className="run-history__card">
+        <p className="run-history__count">
+          Showing {filteredHistory.length} run{filteredHistory.length === 1 ? "" : "s"} for {selectedProjectName}
         </p>
 
         {loadingHistory ? (
@@ -130,45 +124,42 @@ export default function RunHistory() {
         ) : filteredHistory.length === 0 ? (
           <p>No optimization runs found matching the selected filters.</p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #eee", fontSize: "0.85rem", color: "#555" }}>
-                <th style={{ padding: "0.75rem" }}>Date & Time</th>
-                <th style={{ padding: "0.75rem" }}>Model / Parameters</th>
-                <th style={{ padding: "0.75rem" }}>Status</th>
-                <th style={{ padding: "0.75rem" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredHistory.map((run, index) => (
-                <tr key={run.run_id || run.id || index} style={{ borderBottom: "1px solid #eee" }}>
-                  <td style={{ padding: "0.75rem", fontSize: "0.9rem" }}>
-                    {new Date(run.created_at || Date.now()).toLocaleString()}
-                  </td>
-                  <td style={{ padding: "0.75rem", fontSize: "0.9rem" }}>
-                    {run.model_name || run.parameters || "Model v1"}
-                  </td>
-                  <td style={{ padding: "0.75rem", fontSize: "0.9rem" }}>
-                    <span style={{ 
-                      color: (run.status || "Completed").toLowerCase() === "failed" ? "#d9534f" : "#28a745",
-                      fontWeight: "500"
-                    }}>
-                      {run.status || "Completed"}
-                    </span>
-                  </td>
-                  <td style={{ padding: "0.75rem", fontSize: "0.9rem" }}>
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/dashboard/results/${run.run_id || run.id}`)}
-                      style={{ background: "none", border: "none", color: "#007bff", cursor: "pointer", padding: 0 }}
-                    >
-                      view
-                    </button>
-                  </td>
+          <div className="run-history__table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date &amp; Time</th>
+                  <th>Model</th>
+                  <th>Status</th>
+                  <th>Expected return</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredHistory.map((run) => (
+                  <tr key={run.run_id}>
+                    <td>{formatDateTime(run.created_at)}</td>
+                    <td>
+                      {run.model_name}
+                      <span className="run-history__muted"> · {run.objective_type}</span>
+                    </td>
+                    <td>
+                      <StatusBadge status={run.status} />
+                      {run.status === "Failed" && run.error_message && (
+                        <span className="run-history__reason">{run.error_message}</span>
+                      )}
+                    </td>
+                    <td>{run.status === "Completed" ? formatPercent(run.total_return) : "—"}</td>
+                    <td>
+                      <button type="button" className="run-history__view" onClick={() => navigate(`/dashboard/results/${run.run_id}`)}>
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </main>

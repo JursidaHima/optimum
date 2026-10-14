@@ -1,0 +1,41 @@
+.finance__hero-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+}
+
+.finance__band {
+  background-color: #f3f4f6;
+  padding: 4rem 0;
+}
+
+.finance__split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.finance__title {
+  margin-bottom: 1rem;
+}
+
+.finance__text {
+  color: #64748b;
+  margin: 0;
+}
+
+.finance__code {
+  background: #0f172a;
+  color: #38bdf8;
+  padding: 1.5rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .finance__split { grid-template-columns: 1fr; gap: 1.5rem; }
+}

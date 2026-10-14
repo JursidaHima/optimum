@@ -1,354 +1,65 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { getOptimizationResults } from "../services/resultsApi";
-import "../styles/optimization.css";
+import StatusBadge from "../components/StatusBadge.jsx";
+import RunStatusSteps from "../components/RunStatusSteps.jsx";
+import {
+  formatDateTime,
+  formatDuration,
+  formatMoney,
+  formatNumber,
+  formatPercent,
+  isFinished,
+} from "../utils/format";
+import "../styles/optimization-results.css";
+
+const POLL_MS = 1500;
+const CHART_COLORS = ["#0f766e", "#12263f", "#d97706", "#7c3aed", "#0284c7", "#be123c", "#65a30d", "#6b7280"];
 
 export default function OptimizationResults() {
   const { runId } = useParams();
   const navigate = useNavigate();
 
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Everything shown here comes from the API response for this run (the HiGHS solver output
+  // that the server saved): run summary, allocations and constraint checks.
+  const [data, setData] = useState(null);
   const [error, setError] = useState("");
 
+  const status = data?.run?.status;
+  const finished = isFinished(status);
+
+  // Load the run, and keep polling while it is still Pending or Running.
   useEffect(() => {
-    let mounted = true;
+    let cancelled = false;
+    let timer;
 
-    async function fetchResults() {
-      if (!runId) {
-        setError("No optimization run ID was provided.");
-        setLoading(false);
-        return;
-      }
-
+    async function load() {
       try {
-        setLoading(true);
-        setError("");
-
         const response = await getOptimizationResults(runId);
-        console.log("Optimization Results API Response:", response);
-
-        if (mounted) {
-          setResult(response);
-        }
+        if (cancelled) return;
+        setData(response);
+        setError("");
+        if (!isFinished(response.run.status)) timer = setTimeout(load, POLL_MS);
       } catch (err) {
-        console.error("Failed to load optimization results:", err);
-
-        if (mounted) {
-          setError(
-            err?.response?.data?.message ||
-              err?.message ||
-              "Failed to load optimization results."
-          );
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        if (!cancelled) setError(err.message || "Failed to load optimization results.");
       }
     }
 
-    fetchResults();
-
+    load();
     return () => {
-      mounted = false;
+      cancelled = true;
+      clearTimeout(timer);
     };
   }, [runId]);
 
-  /*
-   * 
-   * NORMALIZE API RESPONSE
-   * 
-   */
-
-  const normalized = useMemo(() => {
-    if (!result) {
-      return {
-        run: {},
-        results: {},
-        apiAllocations: [],
-        apiConstraints: [],
-      };
-    }
-
-    let response = result;
-
-    if (response?.data && typeof response.data === "object") {
-      response = response.data;
-    }
-
-    const run = response?.run || response?.optimization_run || {};
-
-    const results =
-      response?.results ||
-      response?.result ||
-      response?.solver_results ||
-      response?.optimization_results ||
-      response?.data?.results ||
-      {};
-
-    const apiAllocations =
-      response?.allocations ||
-      response?.data?.allocations ||
-      results?.allocations ||
-      results?.allocation ||
-      [];
-
-    const apiConstraints =
-      response?.constraints ||
-      response?.data?.constraints ||
-      results?.constraints ||
-      [];
-
-    return {
-      run,
-      results,
-      apiAllocations,
-      apiConstraints,
-    };
-  }, [result]);
-
-  const run = normalized.run;
-  const results = normalized.results;
-  const apiAllocations = normalized.apiAllocations;
-  const apiConstraints = normalized.apiConstraints;
-
-  /*
-   * 
-   * SOLVER STATUS & METADATA
-   * 
-   */
-
-  const solverStatus =
-    run?.status ||
-    results?.status ||
-    result?.status ||
-    "Completed";
-
-  const solverName =
-    run?.solver_name ||
-    run?.solver ||
-    results?.solver_name ||
-    results?.solver ||
-    "HiGHS";
-
-  /*
-   * 
-   * BUDGET & ALLOCATION CALCULATIONS (SCALED)
-   * 
-   */
-
-  const totalBudget = Number(
-    run?.budget ||
-      run?.total_budget ||
-      results?.budget ||
-      results?.total_budget ||
-      20000
-  );
-
-  const allocations = useMemo(() => {
-    let rawAllocations = apiAllocations;
-
-    if (!Array.isArray(rawAllocations) && rawAllocations && typeof rawAllocations === "object") {
-      rawAllocations = Object.entries(rawAllocations).map(([asset, value]) => ({
-        asset_name: asset,
-        allocation_amount: value,
-      }));
-    }
-
-    if (!Array.isArray(rawAllocations)) {
-      return [];
-    }
-
-    return rawAllocations.map((item) => {
-      const rawAmount = Number(
-        item?.allocation_amount !== undefined && item?.allocation_amount !== null
-          ? item.allocation_amount
-          : item?.amount !== undefined && item?.amount !== null
-          ? item.amount
-          : item?.value !== undefined && item?.value !== null
-          ? item.value
-          : 0
-      );
-
-      const rawPercent = Number(
-        item?.allocation_percent !== undefined && item?.allocation_percent !== null
-          ? item.allocation_percent
-          : item?.percentage !== undefined && item?.percentage !== null
-          ? item.percentage
-          : item?.weight !== undefined && item?.weight !== null
-          ? item.weight
-          : 0
-      );
-
-      let calculatedAmount = 0;
-      let calculatedPercent = 0;
-
-      if (rawPercent > 0) {
-        const weight = rawPercent <= 1 ? rawPercent : rawPercent / 100;
-        calculatedPercent = weight * 100;
-        calculatedAmount = weight * totalBudget;
-      } else if (rawAmount > 0) {
-        if (rawAmount <= 1) {
-          calculatedPercent = rawAmount * 100;
-          calculatedAmount = rawAmount * totalBudget;
-        } else {
-          calculatedAmount = rawAmount;
-          calculatedPercent = totalBudget > 0 ? (rawAmount / totalBudget) * 100 : 0;
-        }
-      }
-
-      return {
-        ...item,
-        resolvedAmount: calculatedAmount,
-        resolvedPercent: calculatedPercent,
-        returnContribution: Number(item?.expected_return_contribution || 0),
-        riskContribution: Number(item?.risk_contribution || 0),
-      };
-    });
-  }, [apiAllocations, totalBudget]);
-
-  const totalAllocation = useMemo(() => {
-    return allocations.reduce((sum, item) => sum + item.resolvedAmount, 0);
-  }, [allocations]);
-
-  /*
-   * 
-   * PORTFOLIO KPIS & METRICS (WITH FORMULA FALLBACKS)
-   * 
-   */
-
-  const objectiveValue =
-    results?.objective_value !== undefined && results?.objective_value !== null
-      ? results.objective_value
-      : results?.objectiveValue !== undefined && results?.objectiveValue !== null
-      ? results.objectiveValue
-      : results?.objective ||
-        allocations.reduce((sum, item) => sum + item.returnContribution, 0) ||
-        null;
-
-  const expectedReturn =
-    results?.expected_return !== undefined && results?.expected_return !== null
-      ? results.expected_return
-      : results?.expectedReturn !== undefined && results?.expectedReturn !== null
-      ? results.expectedReturn
-      : results?.portfolio_return ||
-        (objectiveValue ? objectiveValue / totalBudget : null);
-
-  const portfolioRisk =
-    results?.portfolio_risk !== undefined && results?.portfolio_risk !== null
-      ? results.portfolio_risk
-      : results?.portfolioRisk !== undefined && results?.portfolioRisk !== null
-      ? results.portfolioRisk
-      : results?.risk ||
-        allocations.reduce((sum, item) => sum + item.riskContribution, 0) / (allocations.length || 1);
-
-  const constraints = Array.isArray(apiConstraints) ? apiConstraints : [];
-
-  /*
-   * 
-   * FORMATTING HELPERS
-   * 
-   */
-
-  const formatMoney = (value) => {
-    if (value === null || value === undefined || value === "" || value === "N/A") {
-      return "—";
-    }
-    const number = Number(value);
-    if (!Number.isFinite(number)) return String(value);
-
-    return `$${number.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    })}`;
-  };
-
-  const formatPercent = (value) => {
-    if (value === null || value === undefined || value === "" || value === "N/A") {
-      return "—";
-    }
-    const number = Number(value);
-    if (!Number.isFinite(number)) return String(value);
-
-    return `${number.toFixed(1)}%`;
-  };
-
-  const formatReturn = (value) => {
-    if (value === null || value === undefined || value === "" || value === "N/A") {
-      return "—";
-    }
-    const number = Number(value);
-    if (!Number.isFinite(number)) return String(value);
-
-    return `${(number <= 1 ? number * 100 : number).toFixed(1)}%`;
-  };
-
-  const formatRisk = (value) => {
-    if (value === null || value === undefined || value === "" || value === "N/A") {
-      return "—";
-    }
-    const number = Number(value);
-    if (!Number.isFinite(number)) return String(value);
-
-    return number.toFixed(2);
-  };
-
-  const getAssetName = (item, index) => {
-    return (
-      item?.asset_name ||
-      item?.asset ||
-      item?.assetName ||
-      item?.ticker ||
-      item?.symbol ||
-      `Asset ${index + 1}`
-    );
-  };
-
-  const getConstraintMessage = (constraint) => {
-    if (typeof constraint === "string") return constraint;
-    return (
-      constraint?.message ||
-      constraint?.name ||
-      constraint?.constraint ||
-      constraint?.description ||
-      constraint?.status ||
-      "Constraint satisfied"
-    );
-  };
-
-  const handleDownloadReport = () => {
-    window.print();
-  };
-
-  /*
-   * 
-   * CONDITIONAL RENDERING (LOADING & ERRORS)
-   * 
-   */
-
-  if (loading) {
-    return (
-      <main className="optimization">
-        <div className="optimization__card">
-          <h2>Loading optimization results...</h2>
-          <p>Retrieving the solution generated by the optimization solver.</p>
-        </div>
-      </main>
-    );
-  }
-
   if (error) {
     return (
-      <main className="optimization">
-        <div className="optimization__card optimization__error">
+      <main className="optimization-results">
+        <div className="optimization-results__error" role="alert">
           <h2>Unable to load optimization results</h2>
           <p>{error}</p>
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard/history")}
-            className="optimization__back-button"
-          >
+          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/history")}>
             ← Back to History
           </button>
         </div>
@@ -356,201 +67,203 @@ export default function OptimizationResults() {
     );
   }
 
-  const failed = String(solverStatus).toLowerCase() === "failed";
+  if (!data) {
+    return (
+      <main className="optimization-results">
+        <div className="optimization-results__card"><p>Loading results…</p></div>
+      </main>
+    );
+  }
+
+  const { run, allocations, constraints } = data;
+  const budget = Number(run.total_budget);
+  const failed = status === "Failed";
+  const completed = status === "Completed";
+  const violated = constraints.filter((c) => !c.satisfied);
+
+  const chartData = allocations
+    .filter((a) => Number(a.allocation_percent) > 0)
+    .map((a) => ({ name: a.asset_name, value: Number(a.allocation_percent) }));
+
+  const headerLine = completed
+    ? `Showing results for Run #${run.run_id}, completed ${formatDateTime(run.completed_at)}.`
+    : failed
+    ? `Run #${run.run_id} failed on ${formatDateTime(run.completed_at)}.`
+    : `Run #${run.run_id} is ${status}. This page updates automatically.`;
 
   return (
-    <main className="optimization">
-      <header className="optimization__header">
+    <main className="optimization-results">
+      <header className="optimization-results__header">
         <div>
           <h1>Optimization Results</h1>
-          <p>Recommended portfolio generated by the finance optimization model.</p>
+          <p>{headerLine}</p>
+          <p className="optimization-results__sub">
+            {run.model_name} · {run.objective_type} · Budget {formatMoney(budget)} · Solver {run.solver_name}
+          </p>
         </div>
-
-        <div
-          className={`optimization__status ${
-            failed
-              ? "optimization__status--failed"
-              : "optimization__status--success"
-          }`}
-        >
-          {solverStatus}
-        </div>
+        <StatusBadge status={status} />
       </header>
 
-      {failed && (
-        <section className="optimization__card optimization__failed-card">
-          <h2>Optimization Failed</h2>
-          <p>The solver did not produce a valid optimal solution.</p>
+      <section className="optimization-results__card">
+        <RunStatusSteps status={status} />
+      </section>
+
+      {!finished && (
+        <section className="optimization-results__card" role="status">
+          <h2>{status === "Pending" ? "Waiting to start…" : "Solving…"}</h2>
+          <p>The HiGHS solver is working on your model. Results will appear here as soon as the run completes.</p>
         </section>
       )}
 
-      {/* KPI Metrics */}
-      <section className="optimization__metrics">
-        <div className="optimization__metric-card">
-          <span className="optimization__metric-label">Expected Return</span>
-          <strong>{formatReturn(expectedReturn)}</strong>
-        </div>
+      {failed && (
+        <section className="optimization-results__error" role="alert">
+          <h2>Optimization failed</h2>
+          <p>{run.error_message || "The solver could not produce a solution."}</p>
+          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/model-builder")}>
+            Edit Model
+          </button>
+        </section>
+      )}
 
-        <div className="optimization__metric-card">
-          <span className="optimization__metric-label">Portfolio Risk</span>
-          <strong>{formatRisk(portfolioRisk)}</strong>
-        </div>
-
-        <div className="optimization__metric-card">
-          <span className="optimization__metric-label">Objective Value</span>
-          <strong>{formatMoney(objectiveValue)}</strong>
-        </div>
-      </section>
-
-      {/* Solver Info */}
-      <section className="optimization__card">
-        <div className="optimization__section-header">
-          <div>
-            <h2>Solver Information</h2>
-            <p>Optimization engine and run information.</p>
-          </div>
-        </div>
-
-        <div className="optimization__info-grid">
-          <div>
-            <span>Solver</span>
-            <strong>{solverName}</strong>
-          </div>
-          <div>
-            <span>Run ID</span>
-            <strong>{runId}</strong>
-          </div>
-          <div>
-            <span>Status</span>
-            <strong>{solverStatus}</strong>
-          </div>
-          <div>
-            <span>Total Budget</span>
-            <strong>{formatMoney(totalBudget)}</strong>
-          </div>
-        </div>
-      </section>
-
-      {/* Recommended Allocations Table */}
-      <section className="optimization__card">
-        <div className="optimization__section-header">
-          <div>
-            <h2>Recommended Allocation</h2>
-            <p>Optimal allocation calculated by the solver for each asset.</p>
-          </div>
-
-          <div className="optimization__total">
-            <span>Total Allocation</span>
-            <strong>{formatMoney(totalAllocation)}</strong>
-          </div>
-        </div>
-
-        {allocations.length === 0 ? (
-          <div className="optimization__empty">
-            <h3>No allocation data returned</h3>
-            <p>The optimization run completed, but the solver response did not contain any allocation values.</p>
-          </div>
-        ) : (
-          <div className="optimization__table-wrapper">
-            <table className="optimization__table">
-              <thead>
-                <tr>
-                  <th>Asset</th>
-                  <th>Amount</th>
-                  <th>%</th>
-                  <th>Return Contrib.</th>
-                  <th>Risk Contrib.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allocations.map((item, index) => {
-                  return (
-                    <tr key={`${getAssetName(item, index)}-${index}`}>
-                      <td>
-                        <strong>{getAssetName(item, index)}</strong>
-                      </td>
-                      <td>{formatMoney(item.resolvedAmount)}</td>
-                      <td>{formatPercent(item.resolvedPercent)}</td>
-                      <td>{formatMoney(item.returnContribution)}</td>
-                      <td>{formatRisk(item.riskContribution)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td>
-                    <strong>Total</strong>
-                  </td>
-                  <td>
-                    <strong>{formatMoney(totalAllocation)}</strong>
-                  </td>
-                  <td>
-                    <strong>
-                      {allocations.length > 0
-                        ? `${allocations.reduce((sum, i) => sum + i.resolvedPercent, 0).toFixed(1)}%`
-                        : "—"}
-                    </strong>
-                  </td>
-                  <td>
-                    <strong>{formatMoney(objectiveValue)}</strong>
-                  </td>
-                  <td>
-                    <strong>{formatRisk(portfolioRisk)}</strong>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
-      </section>
-
-      {/* Constraint Status */}
-      <section className="optimization__card">
-        <div className="optimization__section-header">
-          <div>
-            <h2>Constraint Status</h2>
-            <p>Validation status of the optimization model constraints.</p>
-          </div>
-        </div>
-
-        {Array.isArray(constraints) && constraints.length > 0 ? (
-          <ul className="optimization__constraints">
-            {constraints.map((constraint, index) => (
-              <li key={index}>
-                <span className="optimization__constraint-icon">✓</span>
-                <span>{getConstraintMessage(constraint)}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="optimization__constraint-success">
-            <span>✓</span>
-            <div>
-              <strong>All model constraints completed</strong>
-              <p>The solver returned a feasible solution within configured constraint limits.</p>
+      {completed && (
+        <>
+          <section className="optimization-results__kpis">
+            <div className="optimization-results__kpi">
+              <span>Expected return</span>
+              <strong>{formatPercent(run.total_return)}</strong>
             </div>
-          </div>
-        )}
-      </section>
+            <div className="optimization-results__kpi">
+              <span>Budget used</span>
+              <strong>{formatMoney(run.total_allocated)}</strong>
+              <small>of {formatMoney(budget)}</small>
+            </div>
+            <div className="optimization-results__kpi">
+              <span>Portfolio risk score</span>
+              <strong>{formatNumber(run.total_risk)}</strong>
+            </div>
+            <div className="optimization-results__kpi">
+              <span>Solve time</span>
+              <strong>{formatDuration(run.solve_duration_ms)}</strong>
+            </div>
+          </section>
 
-      {/* Actions */}
-      <footer className="optimization__actions">
-        <button
-          type="button"
-          className="optimization__back-button"
-          onClick={() => navigate("/dashboard/history")}
-        >
+          <section className="optimization-results__grid">
+            <div className="optimization-results__card">
+              <h2>Allocation</h2>
+              {chartData.length === 0 ? (
+                <p>The solver allocated nothing to any asset.</p>
+              ) : (
+                <>
+                  <div className="optimization-results__chart">
+                    <ResponsiveContainer width="100%" height={260}>
+                      <PieChart>
+                        <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={2}>
+                          {chartData.map((entry, index) => (
+                            <Cell key={entry.name} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `${Number(value).toFixed(2)}%`} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <ul className="optimization-results__legend">
+                    {chartData.map((entry, index) => (
+                      <li key={entry.name}>
+                        <span
+                          className={`optimization-results__swatch optimization-results__swatch--${index % CHART_COLORS.length}`}
+                          aria-hidden="true"
+                        />
+                        {entry.name} — {entry.value.toFixed(2)}%
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+
+            <div className="optimization-results__card">
+              <h2>Constraint checklist</h2>
+              {violated.length > 0 && (
+                <p className="optimization-results__warn" role="alert">
+                  {violated.length} constraint{violated.length === 1 ? "" : "s"} not satisfied.
+                </p>
+              )}
+              {constraints.length === 0 ? (
+                <p>This model has no extra constraints. The budget and each asset's allocation limits were enforced.</p>
+              ) : (
+                <ul className="optimization-results__constraints">
+                  {constraints.map((c) => (
+                    <li
+                      key={c.id}
+                      className={`optimization-results__constraint optimization-results__constraint--${c.satisfied ? "ok" : "bad"}`}
+                    >
+                      <span className="optimization-results__constraint-icon" aria-hidden="true">{c.satisfied ? "✓" : "✕"}</span>
+                      <div>
+                        <strong>{c.label}</strong>
+                        <p>
+                          Target {c.operator} {formatNumber(c.target_value)} · Actual {formatNumber(c.actual_value)} ·{" "}
+                          {c.satisfied ? "Satisfied" : "Violated"}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+
+          <section className="optimization-results__card">
+            <h2>Recommended allocation</h2>
+            {allocations.length === 0 ? (
+              <p>No allocation rows were saved for this run.</p>
+            ) : (
+              <div className="optimization-results__table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Asset</th>
+                      <th>Amount</th>
+                      <th>% of budget</th>
+                      <th>Return contribution</th>
+                      <th>Risk contribution</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allocations.map((a) => (
+                      <tr key={a.result_id}>
+                        <td><strong>{a.asset_name}</strong></td>
+                        <td>{formatMoney(a.allocation_amount)}</td>
+                        <td>{formatPercent(a.allocation_percent)}</td>
+                        <td>{formatPercent(a.expected_return_contribution)}</td>
+                        <td>{formatNumber(a.risk_contribution)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td><strong>Total</strong></td>
+                      <td><strong>{formatMoney(run.total_allocated)}</strong></td>
+                      <td><strong>{formatPercent(allocations.reduce((s, a) => s + Number(a.allocation_percent), 0))}</strong></td>
+                      <td><strong>{formatPercent(run.total_return)}</strong></td>
+                      <td><strong>{formatNumber(run.total_risk)}</strong></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
+          </section>
+        </>
+      )}
+
+      <footer className="optimization-results__actions">
+        <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/history")}>
           ← Back to History
         </button>
-
-        <button
-          type="button"
-          className="optimization__download-button"
-          onClick={handleDownloadReport}
-        >
-          Download Report
-        </button>
+        {completed && (
+          <button type="button" className="btn btn--primary btn--sm" onClick={() => window.print()}>
+            Download Report
+          </button>
+        )}
       </footer>
     </main>
   );

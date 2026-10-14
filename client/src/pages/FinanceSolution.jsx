@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "../styles/finance-solution.css";
 
 const CARDS = [
   {
@@ -21,7 +22,7 @@ export default function FinanceSolution() {
       <section className="hero">
         <div className="container hero__grid">
           <div className="hero__copy">
-            <div className="hero__badge" style={{ fontWeight: 600, color: "#0f766e", marginBottom: "0.75rem", fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <div className="hero__badge">
               Solutions · Finance
             </div>
             
@@ -40,7 +41,7 @@ export default function FinanceSolution() {
             <img 
               src="/herofinance.png" 
               alt="Finance Optimization" 
-              style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px" }} 
+              className="finance__hero-img"
             />
           </div>
         </div>
@@ -59,16 +60,16 @@ export default function FinanceSolution() {
         </div>
       </section>
 
-      <section className="section section--band" style={{ backgroundColor: "#f3f4f6", padding: "4rem 0" }}>
-        <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
+      <section className="section section--band finance__band">
+        <div className="container finance__split">
           <div>
-            <h2 className="section-title" style={{ marginBottom: "1rem" }}>What the model looks like</h2>
-            <p style={{ color: "#64748B", margin: 0 }}>
+            <h2 className="section-title finance__title">What the model looks like</h2>
+            <p className="finance__text">
               Optimum formulates your inputs as a linear program: one decision variable per asset, an objective that maximizes expected return, and constraints for your total budget and each asset's allocation limits.
             </p>
           </div>
           <div>
-            <pre style={{ background: "#0f172a", color: "#38bdf8", padding: "1.5rem", borderRadius: "12px", fontSize: "0.9rem", overflowX: "auto", margin: 0 }}>
+            <pre className="finance__code">
 <code>{`maximize  Σ rᵢ · xᵢ
 subject to Σ xᵢ ≤ Budget
            minᵢ ≤ xᵢ ≤ maxᵢ`}</code>

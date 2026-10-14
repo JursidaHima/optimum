@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FormField from "../components/FormField.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import "../styles/auth.css";
 
 export default function Register() {
   const { register, login } = useAuth();
@@ -31,7 +32,7 @@ export default function Register() {
   }
 
   return (
-    <section className="container" style={{ maxWidth: 420, paddingTop: "3rem" }}>
+    <section className="container auth-page">
       <h1>Create your account</h1>
       
       {error && <p className="alert alert--error" role="alert">{error}</p>}
@@ -58,7 +59,7 @@ export default function Register() {
         </button>
       </form>
       
-      <p style={{ marginTop: "1rem" }}>Already have an account? <Link to="/login">Log in</Link></p>
+      <p className="auth-page__alt">Already have an account? <Link to="/login">Log in</Link></p>
     </section>
   );
 }

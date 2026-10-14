@@ -1,11 +1,12 @@
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, NavLink, Outlet, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/dashboard.css";
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const params = useParams();
-  const projectId = params.projectId; // Still available if you need it for nested project views
+  const projectId = params.projectId;
+  const linkClass = ({ isActive }) => `app-sidebar__link${isActive ? " active" : ""}`; // Still available if you need it for nested project views
 
   return (
     <div className="app-shell">
@@ -13,22 +14,27 @@ export default function DashboardLayout() {
         <Link to="/" className="logo">Optimum</Link>
         
         <nav className="app-sidebar__nav">
-          <Link to="/dashboard" className="app-sidebar__link">Projects</Link>
-          <Link to="/dashboard/model-builder" className="app-sidebar__link">Model Builder</Link>
-          <Link to="/dashboard/data-upload" className="app-sidebar__link">Data Upload</Link>
+          <NavLink to="/dashboard" end className={linkClass}>Dashboard</NavLink>
+          <NavLink to="/dashboard/projects" className={linkClass}>Projects</NavLink>
+          <NavLink to="/dashboard/model-builder" className={linkClass}>Model Builder</NavLink>
+          <NavLink to="/dashboard/data-upload" className={linkClass}>Data Upload</NavLink>
+
+          {user?.role === "Admin" && (
+            <Link to="/admin" className="app-sidebar__link">Admin area</Link>
+          )}
 
           {/* Standalone Global Pages */}
-          <Link to="/dashboard/run-optimization" className="app-sidebar__link">
+          <NavLink to="/dashboard/run-optimization" className={linkClass}>
             Run Optimization
-          </Link>
-          <Link to="/dashboard/history" className="app-sidebar__link">
+          </NavLink>
+          <NavLink to="/dashboard/history" className={linkClass}>
             History
-          </Link>
+          </NavLink>
 
           {/* Conditionally show other project-specific links only when viewing a project */}
           {projectId && (
-            <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.6, marginBottom: "0.5rem" }}>
+            <div className="app-sidebar__section">
+              <div className="app-sidebar__section-title">
                 Active Project Actions
               </div>
               <Link to={`/dashboard/projects/${projectId}/model`} className="app-sidebar__link">
@@ -41,7 +47,7 @@ export default function DashboardLayout() {
         <div className="app-sidebar__foot">
           <p>
             {user?.name} {user?.surname}<br />
-            <span style={{ opacity: 0.7 }}>{user?.email}</span>
+            <span className="app-sidebar__email">{user?.email}</span>
           </p>
           <button type="button" className="btn btn--ghost btn--sm btn--block" onClick={logout}>
             Log out

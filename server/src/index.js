@@ -10,6 +10,9 @@ import datasetsRoutes from "./routes/datasetsRoutes.js";
 import optimizationRoutes from "./routes/optimizationRoutes.js";
 import resultsRoutes from "./routes/resultsRoutes.js";
 import historyRoutes from "./routes/historyRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import { failInterruptedRuns } from "./services/runService.js";
 
 // Load environment variables
 dotenv.config();
@@ -35,6 +38,9 @@ app.use("/api", datasetsRoutes); //to make match the route for datasetsRoutes, w
 app.use("/api", optimizationRoutes);
 app.use("/api", resultsRoutes);
 app.use("/api", historyRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+
 // GET /  Root Route
 app.get("/", (req, res) => {
   res.json({ message: "Optimum API is running successfully!" });
@@ -54,6 +60,11 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Optimum API listening on http://localhost:${PORT}`);
+  try {
+    await failInterruptedRuns();
+  } catch (err) {
+    console.error("Startup database check failed:", err.message);
+  }
 });

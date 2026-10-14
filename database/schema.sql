@@ -219,3 +219,20 @@ CREATE TABLE IF NOT EXISTS Run_Constraint_Results (
         REFERENCES Optimization_Runs(run_id)
         ON DELETE CASCADE
 );
+--  Audit Logs Table for tracking user actions and system events as Admin
+CREATE TABLE IF NOT EXISTS Audit_Logs (
+  log_id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NULL,
+  action_type VARCHAR(100) NOT NULL,
+  details TEXT NULL,
+  timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE SET NULL
+);
+--  System Templates Table for admin 
+CREATE TABLE IF NOT EXISTS System_Templates (
+  template_id INT PRIMARY KEY AUTO_INCREMENT,
+  template_name VARCHAR(150) NOT NULL,
+  description TEXT NOT NULL,
+  default_config_json TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
