@@ -101,12 +101,12 @@ export default function AdminTemplates() {
           >
             {(p) => (
               <textarea
-                {...p}
-                className="admin__code"
-                rows={14}
-                spellCheck={false}
-                value={form.defaultConfigJson}
-                onChange={(e) => setForm({ ...form, defaultConfigJson: e.target.value })}
+                // {...p}
+                // className="admin__code"
+                // rows={14}
+                // spellCheck={false}
+                // value={form.defaultConfigJson}
+                // onChange={(e) => setForm({ ...form, defaultConfigJson: e.target.value })}
               />
             )}
           </FormField>

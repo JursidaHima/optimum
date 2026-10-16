@@ -33,7 +33,7 @@ export default function AdminDashboard() {
       <div className="admin__card">
         <div className="admin__card-head">
           <h2>Optimization runs by status</h2>
-          <Link to="/admin/jobs" className="btn btn--primary btn--sm">Open job monitor</Link>
+          {/* <Link to="/admin/jobs" className="btn btn--primary btn--sm">Open job monitor</Link> */}
         </div>
         <div className="admin__kpis admin__kpis--4">
           {RUN_STATUSES.map((status) => (

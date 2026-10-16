@@ -14,7 +14,7 @@ export default function AdminAuditLog() {
     <section className="admin">
       <header className="admin__header">
         <h1>Audit Log</h1>
-        <p>Who did what and when: logins, admin actions and run results (latest 200).</p>
+        <p>Who did what and when: logins, admin actions and run results .</p>
       </header>
 
       {error && <p className="alert alert--error" role="alert">{error}</p>}

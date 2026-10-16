@@ -216,7 +216,7 @@ export default function AdminUsers() {
                       <td>{u.run_count}</td>
                       <td>{formatDateTime(u.last_login)}</td>
                       <td className="admin__row-actions">
-                        <button type="button" className="admin__link-btn" onClick={() => openDetail(u)}>Activity</button>
+                        {/* <button type="button" className="admin__link-btn" onClick={() => openDetail(u)}>Activity</button> */}
                         {isOptimizer && (
                           <>
                             <button type="button" className="admin__link-btn" onClick={() => openEdit(u)}>Edit</button>

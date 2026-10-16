@@ -48,7 +48,7 @@ export default function AdminJobs() {
 
       {notice && <p className="alert alert--success" role="status">{notice}</p>}
       {error && <p className="alert alert--error" role="alert">{error}</p>}
-
+{/* 
       {data && (
         <div className="admin__kpis admin__kpis--6">
           {RUN_STATUSES.map((s) => (
@@ -57,7 +57,7 @@ export default function AdminJobs() {
           <div className="admin__kpi"><span>Avg solve time</span><strong>{formatDuration(data.summary.avgSolveMs)}</strong></div>
           <div className="admin__kpi"><span>Failure rate</span><strong>{(data.summary.failureRate * 100).toFixed(0)}%</strong></div>
         </div>
-      )}
+      )} */}
 
       <div className="admin__card admin__filters">
         <label className="admin__filter">
@@ -67,7 +67,7 @@ export default function AdminJobs() {
             {RUN_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        <button type="button" className="btn btn--ghost btn--sm btn--dark" onClick={load}>Refresh</button>
+        {/* <button type="button" className="btn btn--ghost btn--sm btn--dark" onClick={load}>Refresh</button> */}
       </div>
 
       <div className="admin__card">
