@@ -1,4 +1,4 @@
-.user-dash { width: 100%; max-width: 1200px; margin: 0 auto; }
+.user-dash { width: 100%; max-width: none; margin: 0; }
 
 .user-dash__header { margin-bottom: 1.5rem; }
 .user-dash__header p { color: #5c584c; margin: 0; }

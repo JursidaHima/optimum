@@ -1,8 +1,11 @@
+/* Model Builder */
+
 .model-builder {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
+
 
 .model-builder__header {
   margin-bottom: 2rem;
@@ -12,9 +15,254 @@
   margin-bottom: 0.5rem;
 }
 
+.model-builder__header p {
+  color: #5c584c;
+  max-width: 720px;
+  margin: 0;
+}
+
+/*  Form layout & section cards  */
+.model-builder__form {
+  display: block;
+}
+
 .model-builder__section {
-  background: #ffffff;
+  background: #fff;
+  border: 1px solid #ddd;
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid #ddd;
+  margin-bottom: 1.5rem;
+}
+
+.model-builder__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.model-builder__section-header h2 {
+  margin-bottom: 0.35rem;
+}
+
+.model-builder__section-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+/*  Messages  */
+.model-builder__message {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.model-builder__message--error {
+  background: #fbeaea;
+  color: #9b1c1c;
+}
+
+.model-builder__message--success {
+  background: #e3f5ea;
+  color: #147a52;
+}
+
+/*  Fields  */
+.model-builder__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.model-builder .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.model-builder .form-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #12263f;
+}
+
+.model-builder .form-group input,
+.model-builder .form-group select {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1.5px solid #d8d3c4;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: inherit;
+  background: #fff;
+}
+
+.model-builder .form-group input:focus,
+.model-builder .form-group select:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.model-builder .form-group input::placeholder {
+  color: #9a968a;
+}
+
+.model-builder .form-group select:disabled,
+.model-builder .form-group input:disabled {
+  background: #f8fafc;
+  cursor: not-allowed;
+}
+
+/* The project dropdown mirrors the Data Upload select */
+.model-builder__section > .form-group {
+  max-width: 520px;
+}
+
+/*  Assets  */
+.model-builder__assets {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.model-builder__asset {
+  background: #f8fafc;
+  border: 1px solid #e4e0d8;
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.model-builder__asset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.model-builder__asset-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #12263f;
+}
+
+/*  Constraints  */
+.model-builder__constraints {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.model-builder__constraint {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+  background: #f8fafc;
+  border: 1px solid #e4e0d8;
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.model-builder__empty {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: #f8fafc;
+  color: #64748b;
+  text-align: center;
+}
+
+/*  Buttons  */
+.model-builder .btn--secondary {
+  background: #fff;
+  color: #12263f;
+  border: 1.5px solid #12263f;
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.model-builder .btn--secondary:hover {
+  background: #12263f;
+  color: #fff;
+}
+
+/* Text-style danger button, same look as the admin "Delete" links */
+.model-builder__remove {
+  background: none;
+  border: 0;
+  padding: 0.4rem 0.2rem;
+  color: #b3331f;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.model-builder__remove:hover {
+  color: #9b1c1c;
+}
+
+/* Save Model — same pill style as .btn--primary */
+.model-builder__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+}
+
+.model-builder__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  background: #12263f;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.model-builder__actions button:hover {
+  background: #0f172a;
+}
+
+.model-builder__actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/*  Responsive  */
+@media (max-width: 900px) {
+  .model-builder__constraint {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .model-builder__section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .model-builder__constraint {
+    grid-template-columns: 1fr;
+  }
+
+  .model-builder__section > .form-group {
+    max-width: none;
+  }
 }

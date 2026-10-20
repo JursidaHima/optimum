@@ -1,4 +1,4 @@
-.optimization-results { width: 100%; max-width: 1250px; margin: 0 auto; }
+.optimization-results { width: 100%; max-width: none; margin: 0; }
 
 .optimization-results__header {
   display: flex;

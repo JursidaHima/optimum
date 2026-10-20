@@ -1,5 +1,5 @@
 /* Administrator area */
-.admin { width: 100%; max-width: 1250px; margin: 0 auto; }
+.admin { width: 100%; max-width: none; margin: 0; }
 
 .admin__header { margin-bottom: 1.5rem; }
 .admin__header p { color: #5c584c; margin: 0; }

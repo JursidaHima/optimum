@@ -11,15 +11,16 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* logo + nav stay together at the top */
 }
 
 .app-sidebar .logo {
-  font-size: 1.25rem;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
   color: #fff;
   text-decoration: none;
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
   display: block;
 }
 
@@ -43,15 +44,28 @@
   color: #fff;
 }
 
+/* Log out: teal on hover instead of the default white ghost hover */
+.app-sidebar__foot .btn--ghost {
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.app-sidebar__foot .btn--ghost:hover {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
 .app-sidebar__foot {
+  margin-top: auto; /* pushes the user info + Log out to the bottom */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1rem;
 }
 
 .app-content {
-  padding: 2rem;
+  padding: 2rem 2.5rem;
   background: #f8f9fa;
   overflow-y: auto;
+  min-width: 0; /* lets wide tables scroll inside the 1fr column instead of stretching it */
 }
 
 .panel {
@@ -80,7 +94,7 @@
 }
 
 .app-sidebar__role {
-  margin: -1.25rem 0 1.5rem;
+  margin: -1.5rem 0 1.5rem;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;

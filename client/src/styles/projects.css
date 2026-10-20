@@ -1,4 +1,175 @@
+/* Projects page — styled to match Data Upload / Model Builder / Admin pages. */
+
+/* ---------- Page header ---------- */
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.page-head h1 {
+  margin: 0;
+}
+
+/* ---------- Form panel (New / Edit project) ---------- */
+.panel {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: none;
+}
+
+.panel h2 {
+  margin-bottom: 1.25rem;
+}
+
+.panel .field input {
+  border-color: #d8d3c4;
+  background: #fff;
+}
+
+.panel .field input:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
 .form-actions {
   display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e4e0d8;
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+/* ---------- Project cards ---------- */
+/* One project per row, stacked vertically (list, not a card grid) */
+.entity-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.entity-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title actions"
+    "desc  actions";
+  column-gap: 1.5rem;
+  row-gap: 0.25rem;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd8cc;
+  border-radius: 12px;
+  padding: 1.1rem 1.5rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.entity-card:hover {
+  border-color: #0f766e;
+  background: #fcfdfc;
+}
+
+.entity-card h3 {
+  grid-area: title;
+  margin: 0;
+  font-size: 1.1rem;
+  color: #12263f;
+}
+
+.entity-card p {
+  grid-area: desc;
+  margin: 0;
+  color: #5c584c;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.entity-card__actions {
+  grid-area: actions;
+  display: flex;
   gap: 0.5rem;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+/* ---------- Buttons on light backgrounds ----------
+   The global .btn--ghost / .btn--sm are built for the dark sidebar (white text),
+   so they would be invisible on white cards. Override them here only. */
+.entity-card .btn--ghost,
+.panel .btn--ghost {
+  background: #fff;
+  border-color: #d8d3c4;
+  color: #12263f;
+}
+
+.entity-card .btn--ghost:hover,
+.panel .btn--ghost:hover {
+  background: #f2f0e8;
+  border-color: #12263f;
+}
+
+/* Delete = danger tone (3rd button in the card) */
+.entity-card__actions .btn--ghost:last-child {
+  color: #b3331f;
+}
+
+.entity-card__actions .btn--ghost:last-child:hover {
+  background: #fbeaea;
+  border-color: #b3331f;
+}
+
+.entity-card .btn--primary,
+.panel .btn--primary {
+  color: #fff;
+}
+
+.entity-card .btn--sm {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+  .page-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .entity-card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "desc"
+      "actions";
+    row-gap: 0.5rem;
+  }
+
+  .entity-card__actions {
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
 }

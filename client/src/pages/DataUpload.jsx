@@ -193,7 +193,7 @@ export default function DataUpload() {
     <main className="data-upload">
       <header className="data-upload__header">
         <div>
-          <p className="data-upload__eyebrow">Feature 5 · Finance MVP</p>
+        
           <h1>Upload Portfolio Data</h1>
           <p>Upload a CSV or JSON asset dataset, preview the rows, and attach the confirmed data to a project.</p>
         </div>
