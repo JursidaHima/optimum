@@ -13,6 +13,12 @@ import Documentation from "./pages/Documentation.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 
+// forget and reset 
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+
+
+
 import UserDashboard from "./pages/UserDashboard.jsx";
 import Projects from "./pages/Projects.jsx";
 import ModelBuilder from "./pages/ModelBuilder.jsx";
@@ -41,7 +47,10 @@ export default function App() {
         {/* Auth */}
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
       </Route>
+      
 
       {/* Protected user dashboard */}
       <Route element={<ProtectedRoute />}>

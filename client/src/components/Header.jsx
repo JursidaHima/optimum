@@ -25,7 +25,7 @@ export default function Header() {
         ) : (
           <>
             <Link to="/login">Log in</Link>
-            <Link to="/register" className="btn--sm">Get Started</Link>
+            {/* <Link to="/register" className="btn--sm">Get Started</Link> */}
           </>
         )}
       </nav>

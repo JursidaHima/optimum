@@ -5,9 +5,15 @@ import { query } from "../config/db.js";
 import { ApiError } from "../middleware/errorHandler.js";
 import { MESSAGES } from "../utils/messages.js";
 import { logAction } from "../utils/audit.js";
+import { sendResetEmail } from "../utils/mailer.js";
+
+
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const DEFAULT_ROLE_ID = 2; // Matches the Roles table seeded in PART 12
+const DEFAULT_ROLE_ID = 2; // Matches the Roles table
+//reset link expires after 30 minutes
+const RESET_MINUTES = 30;
+const hashToken = (t) => crypto.createHash("sha256").update(t).digest("hex");
 
 // Helper: Ensure password meets security requirements
 const isStrongPassword = (v) =>
@@ -148,4 +154,59 @@ export async function refresh(req, res) {
   }
   const { token, expiresAt } = createToken(user);
   res.json({ token, user: formatUser(user), expiresAt });
+}
+
+
+// POST /api/auth/forgot-password { email }
+export async function forgotPassword(req, res) {
+  const cleanEmail = String(req.body.email || "").trim().toLowerCase();
+  if (!EMAIL_REGEX.test(cleanEmail))
+    throw new ApiError(400, MESSAGES.invalidEmail, "email");
+
+  const [user] = await query(
+    "SELECT user_id, email, status FROM Users WHERE email = ?",
+    [cleanEmail],
+  );
+
+  if (user && user.status === "Active") {
+    const token = crypto.randomBytes(32).toString("hex");
+
+    // Cancel any older unused links for this user
+    await query(
+      "UPDATE Password_Resets SET used_at = NOW() WHERE user_id = ? AND used_at IS NULL",
+      [user.user_id],
+    );
+    await query(
+      "INSERT INTO Password_Resets (user_id, token_hash, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL ? MINUTE))",
+      [user.user_id, hashToken(token), RESET_MINUTES],
+    );
+
+    const origin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+    await sendResetEmail(user.email, `${origin}/reset-password?token=${token}`);
+    await logAction(user.user_id, "PASSWORD_RESET_REQUESTED", `Reset link sent to ${user.email}.`);
+  }
+
+  // Same answer whether or not the email exists, so nobody can probe for accounts
+  res.json({ message: MESSAGES.resetEmailSent });
+}
+
+// POST /api/auth/reset-password { token, password }
+export async function resetPassword(req, res) {
+  const { token = "", password = "" } = req.body;
+  if (!isStrongPassword(password))
+    throw new ApiError(400, MESSAGES.weakPassword, "password");
+
+  const [reset] = await query(
+    "SELECT reset_id, user_id FROM Password_Resets WHERE token_hash = ? AND used_at IS NULL AND expires_at > NOW()",
+    [hashToken(String(token))],
+  );
+  if (!reset) throw new ApiError(400, MESSAGES.resetLinkInvalid);
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  await query("UPDATE Users SET password_hash = ? WHERE user_id = ?", [passwordHash, reset.user_id]);
+  await query("UPDATE Password_Resets SET used_at = NOW() WHERE reset_id = ?", [reset.reset_id]);
+  await query("DELETE FROM Sessions WHERE user_id = ?", [reset.user_id]);
+  await logAction(reset.user_id, "PASSWORD_RESET", "Password changed using a reset link.");
+
+  res.json({ message: MESSAGES.passwordReset });
 }

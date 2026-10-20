@@ -36,4 +36,9 @@ export const MESSAGES = {
   // general
   notFound: "Not found.",
   serverError: "Something went wrong. Please try again.",
+  // Password reset
+  resetEmailSent:
+    "If an account exists for that email, a reset link has been sent.",
+  resetLinkInvalid: "This reset link is invalid or has expired.",
+  passwordReset: "Password updated. You can now log in.",
 };

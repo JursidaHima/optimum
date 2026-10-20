@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-     "seed:admin": "node scripts/createAdmin.js"
+    "seed:admin": "node scripts/createAdmin.js"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +21,7 @@
     "express": "^5.2.1",
     "highs": "^1.15.3",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.24.4"
+    "mysql2": "^3.24.4",
+    "nodemailer": "^10.1.7"
   }
 }
-

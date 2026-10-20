@@ -1,8 +1,168 @@
-.auth-page {
-  max-width: 420px;
-  padding-top: 3rem;
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 170px);
+  padding: 3rem 1.25rem;
+  background: #faf9f5;
 }
 
-.auth-page__alt {
-  margin-top: 1rem;
+.wrapper .card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem 2.25rem;
+  background: #fff;
+  border: 1px solid #e4e0d8;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(18, 38, 63, 0.1);
+}
+
+.wrapper .card--wide { max-width: 540px; }
+
+.wrapper h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #12263f;
+}
+
+.wrapper h2 {
+  margin: 0 0 1.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #5c584c;
+}
+
+/* Fields */
+.wrapper .field { margin-bottom: 1.25rem; }
+
+.wrapper .field__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #12263f;
+}
+
+/* Bigger input fields */
+.wrapper input:not([type="checkbox"]) {
+  width: 100%;
+  padding: 1rem 1.15rem; /* Increased padding for a larger, roomier input area */
+  border: 1.5px solid #d8d3c4;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 1.05rem; /* Slightly larger text inside the input */
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.wrapper input:not([type="checkbox"]):focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+
+/* Row (Name | Surname) */
+.wrapper .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.wrapper .field__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #6b675c;
+}
+
+/* Error Box */
+.wrapper .error-box {
+  margin-bottom: 1.25rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #f3c6c0;
+  border-radius: 10px;
+  background: #fbeaea;
+  color: #9b1c1c;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+// Success Box for password reset confirmation
+.wrapper .success-box {
+  margin: 0 0 1.25rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #b7e4c7;
+  border-radius: 10px;
+  background: #e3f5ea;
+  color: #147a52;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+/* Submit Button */
+.wrapper .submit-btn {
+  display: block;
+  min-width: 180px;
+  margin: 0.75rem auto 0;
+  padding: 0.85rem 3rem;
+  border: 0;
+  border-radius: 999px;
+  background: #0f766e;
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.3);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.wrapper .submit-btn:hover:not(:disabled) {
+  background: #0d6b64;
+  transform: translateY(-1px);
+}
+
+.wrapper .submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Checkbox & Links */
+.wrapper .remember {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.92rem;
+  color: #12263f;
+  cursor: pointer;
+}
+
+.wrapper .remember input {
+  width: 18px;
+  height: 18px;
+  accent-color: #0f766e;
+  cursor: pointer;
+}
+
+.wrapper .bottom-text {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.92rem;
+  color: #5c584c;
+}
+
+.wrapper .bottom-text a {
+  font-weight: 600;
+  color: #0f766e;
+  text-decoration: none;
+}
+
+.wrapper .bottom-text a:hover { text-decoration: underline; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .wrapper { padding: 2rem 1rem; }
+  .wrapper .row { grid-template-columns: 1fr; }
+  .wrapper .card { padding: 2rem 1.5rem; }
 }
