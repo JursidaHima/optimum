@@ -1,59 +1,99 @@
+
 import "../styles/how-it-works.css";
+
 const STEPS = [
   {
     num: "1",
     title: "Create Project",
-    text: "Start a Finance project and give it a name."
+    text: "Start by creating a new Finance project in your workspace. Give your project a meaningful name so you can easily identify and manage your investment optimization models.",
+    points: [
+      "Create and name your Finance project",
+      "Organize your optimization work",
+      "Prepare your investment model"
+    ]
   },
   {
     num: "2",
-    title: "Add data",
-    text: "Enter assets, budget and limits — or upload a file."
+    title: "Add Data",
+    text: "Provide the financial information needed for optimization. Define your available investment budget, add assets, and specify the minimum and maximum amounts that can be allocated to each asset.",
+    points: [
+      "Enter assets and expected returns",
+      "Set budget and allocation limits",
+      "Import portfolio data using CSV or JSON"
+    ]
   },
   {
     num: "3",
     title: "Run Optimization",
-    text: "HiGHS solves the model and reports its status."
+    text: "Submit your financial model to the HiGHS optimization solver. The system evaluates your objective and constraints to calculate an optimal allocation based on the information you provided.",
+    points: [
+      "Solve your linear programming model",
+      "Apply your investment constraints",
+      "Review the optimization status"
+    ]
   },
   {
     num: "4",
     title: "View Results",
-    text: "Review allocation, expected return and charts."
+    text: "Explore your optimized portfolio through organized summaries and visual charts. Understand how your budget is distributed and evaluate the expected return of the recommended allocation.",
+    points: [
+      "Review optimized asset allocations",
+      "Explore portfolio charts and metrics",
+      "Access previous optimization runs"
+    ]
   }
 ];
 
 const BENEFITS = [
   {
     title: "Fast & Accurate",
-    text: "Exact linear-programming results, not estimates."
+    text: "Use mathematical optimization to find efficient investment allocations without manually testing every possible combination. The HiGHS solver processes your model and reports the solution status.",
+    points: [
+      "Mathematical optimization with HiGHS",
+      "Efficient solution of linear models",
+      "Clear solver status and results"
+    ]
   },
   {
     title: "Flexible",
-    text: "Your assets, your budget, your allocation limits."
+    text: "Build financial optimization models around your own investment goals. Adjust budgets, expected returns, assets, and allocation restrictions to explore different portfolio configurations.",
+    points: [
+      "Customize investment budgets",
+      "Define asset allocation constraints",
+      "Explore different model inputs"
+    ]
   },
   {
     title: "Secure",
-    text: "Private accounts and stored run history."
+    text: "Work with your financial optimization projects through a personal account. Keep your projects organized and access saved optimization runs when you need to review previous decisions.",
+    points: [
+      "Personal account access",
+      "Organized financial projects",
+      "Saved optimization run history"
+    ]
   },
   {
     title: "User Friendly",
-    text: "A guided workflow from goal to answer."
+    text: "Follow a structured workflow that makes mathematical optimization easier to understand. From entering financial data to reviewing portfolio results, each stage is organized for clarity.",
+    points: [
+      "Simple step-by-step workflow",
+      "Clear financial summaries",
+      "Easy-to-understand result charts"
+    ]
   }
 ];
 
 export default function HowItWorks() {
   return (
-    <>
+    <main className="how">
       <section className="hero">
-        <div className="container">
-          <div className="hero__copy how__hero-copy">
-            <div className="hero__badge">
-              How it works
-            </div>
-            
+        <div className="layout">
+          <div className="copy">
+            <div className="badge">How it works</div>
+
             <h1>Get the best results in 4 simple steps</h1>
-            
-            <p className="lead how__lead">
+
+            <p className="lead">
               From your goals to optimized results — it's easy.
             </p>
           </div>
@@ -61,36 +101,48 @@ export default function HowItWorks() {
       </section>
 
       <section className="section">
-        <div className="container">
-          <ul className="card-grid how__grid">
+        <div className="layout">
+          <ul className="grid">
             {STEPS.map((step) => (
-              <li key={step.num} className="info-card how__step">
-                <div className="how__num">
-                  {step.num}
-                </div>
-                <div>
-                  <h3 className="how__card-title">{step.title}</h3>
-                  <p className="how__card-text">{step.text}</p>
-                </div>
+              <li className="card step" key={step.num}>
+                <div className="number">{step.num}</div>
+
+                <h3>{step.title}</h3>
+
+                <p>{step.text}</p>
+
+                <ul className="details">
+                  {step.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      <section className="section how__benefits">
-        <div className="container">
-          <h2 className="how__benefits-title">Why choose Optimum?</h2>
-          <ul className="card-grid how__grid">
+      <section className="section benefits">
+        <div className="layout">
+          <h2>Why choose Optimum?</h2>
+
+          <ul className="grid">
             {BENEFITS.map((benefit) => (
-              <li key={benefit.title} className="info-card">
-                <h3 className="how__card-title">{benefit.title}</h3>
-                <p className="how__card-text">{benefit.text}</p>
+              <li className="card" key={benefit.title}>
+                <h3>{benefit.title}</h3>
+
+                <p>{benefit.text}</p>
+
+                <ul className="details">
+                  {benefit.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>
         </div>
       </section>
-    </>
+    </main>
   );
 }

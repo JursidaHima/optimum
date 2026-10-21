@@ -20,14 +20,47 @@
 .data-upload__table td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
 .data-upload__table th { background: #f8fafc; font-size: 0.85rem; }
 .data-upload__dataset-list { list-style: none; padding: 0; margin: 0; }
-.data-upload__dataset-list li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid #e5e7eb; }
+.data-upload__dataset-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid #e5e7eb; }
 .data-upload__dataset-list li > div { display: flex; gap: 1rem; }
 .data-upload__dataset-list span,
 .data-upload__dataset-list time { color: #64748b; font-size: 0.85rem; }
 .data-upload__empty { color: #64748b; }
 
-@media (max-width: 700px) {
+/* "Create model" link/button next to each dataset */
+.data-upload .make { padding: 0; border: 0; background: none; color: #0f766e; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+/* ---- Create a model from a dataset (panel) ---- */
+.data-upload .maker { border-top: 4px solid #0f766e; }
+.data-upload .maker h3 { margin: 1.5rem 0 0.75rem; font-size: 1.05rem; color: #12263f; }
+.data-upload .maker .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.data-upload .maker label { display: flex; flex-direction: column; gap: 0.4rem; font-weight: 600; font-size: 0.9rem; color: #12263f; }
+.data-upload .maker input,
+.data-upload .maker select { width: 100%; max-width: none; padding: 0.6rem 0.75rem; border: 1.5px solid #d8d3c4; border-radius: 10px; background: #fff; font: inherit; font-weight: 400; }
+.data-upload .maker input:focus,
+.data-upload .maker select:focus { outline: none; border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14); }
+
+.data-upload .maker .bulk { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 1rem; }
+.data-upload .maker .bulk span { align-self: center; font-weight: 600; color: #12263f; }
+.data-upload .maker .bulk label { width: 110px; }
+.data-upload .maker .bulk label.wide { width: 260px; }
+
+.data-upload .maker td input { min-width: 90px; }
+.data-upload .maker .sum { margin: 0.75rem 0 0; font-size: 0.9rem; color: #64748b; }
+.data-upload .maker .sum.bad { color: #9b1c1c; font-weight: 600; }
+
+.data-upload .maker .con { display: grid; grid-template-columns: 2fr 90px 1fr auto; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+
+.data-upload .maker .buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+
+/* Phone */
+@media (max-width: 600px) {
   .data-upload__header,
   .data-upload__section-head { flex-direction: column; align-items: stretch; }
-  .data-upload__dataset-list li { flex-direction: column; }
+  .data-upload__dataset-list li { flex-direction: column; align-items: flex-start; }
+
+  .data-upload .maker .grid { grid-template-columns: 1fr; }
+  .data-upload .maker .con { grid-template-columns: 1fr 90px; }
+  .data-upload .maker .con input { grid-column: 1 / 2; }
+  .data-upload .maker .bulk label { width: 45%; }
+  .data-upload .maker .bulk label.wide { width: 100%; }
 }

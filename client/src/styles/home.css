@@ -1,7 +1,424 @@
-.home__hero-img {
+
+
+.home {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  background: #f3f4f6;
+  color: #0f172a;
+}
+
+.home * {
+  box-sizing: border-box;
+}
+
+
+.home .layout {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 32px;
+}
+
+/* hero section  */
+
+.home .hero {
+  width: 100%;
+  padding: 75px 0;
+ .home .hero {
+  width: 100%;
+  padding: 75px 0;
+  background: rgb(250, 249, 245);
+}
+}
+
+.home .hero .layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 55px;
+}
+
+/* Center hero text */
+
+.home .copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+}
+
+/* Hero badge */
+
+.home .badge {
+  display: inline-block;
+  margin-bottom: 22px;
+  padding: 0;
+  background: transparent;
+  color: #347d78;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Hero heading */
+
+.home .copy h1 {
+  margin: 0 0 22px;
+  color: #0f172a;
+  font-size: clamp(36px, 4vw, 58px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+/* Hero main description */
+
+.home .lead {
+  max-width: 650px;
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* Hero additional description */
+
+.home .description {
+  max-width: 680px;
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.9;
+  text-align: center;
+}
+
+/* 
+   GET STARTED BUTTON
+    */
+
+.home .actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.home .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 26px;
+  border: none;
+  border-radius: 4px;
+  background: #4d988f;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.home .button:hover {
+  background: #397d75;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.home .button:focus-visible {
+  outline: 3px solid #93c5b9;
+  outline-offset: 3px;
+}
+
+/* 
+   HERO IMAGE - ROUNDED CORNERS
+    */
+
+.home .media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Rounded image */
+
+.home .media img {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
+  max-height: 460px;
+  object-fit: cover;
+  border-radius: 12px;
+  clip-path: inset(0 round 12px);
+}
+
+/* 
+   INFORMATION SECTION
+    */
+
+.home .section {
+  width: 100%;
+  padding: 75px 0 90px;
+  background: #f3f4f6;
+}
+
+.home .heading {
+  margin-bottom: 35px;
+}
+
+.home .heading h2 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+}
+
+.home .heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* 
+   THREE LARGE INFORMATION CARDS
+    */
+
+.home .grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Card container */
+
+.home .card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 390px;
+  padding: 32px;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
-  box-shadow: var(--shadow);
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.home .card:hover {
+  transform: translateY(-4px);
+  border-color: #91beb5;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+}
+
+/* Card number */
+
+.home .number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  background: #e6f2ef;
+  color: #347d78;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+/* Card title */
+
+.home .card h3 {
+  margin: 0 0 16px;
+  color: #0f172a;
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+/* Card description */
+
+.home .card > p {
+  margin: 0 0 22px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+/* 
+   CARD DETAILS
+    */
+
+.home .details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: auto 0 0;
+  padding: 20px 0 0;
+  border-top: 1px solid #e2e8f0;
+  list-style: none;
+}
+
+.home .details li {
+  position: relative;
+  padding-left: 22px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.home .details li::before {
+  content: "✓";
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #4d988f;
+  font-weight: 800;
+}
+
+/* 
+   PHONE RESPONSIVE - 600PX
+    */
+
+@media (max-width: 600px) {
+
+  /* Full-width layout */
+
+  .home .layout {
+    padding: 0 16px;
+  }
+
+  /* Hero */
+
+  .home .hero {
+    padding: 45px 0;
+  }
+
+  .home .hero .layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .home .copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .home .badge {
+    margin-bottom: 18px;
+    font-size: 11px;
+  }
+
+  .home .copy h1 {
+    margin-bottom: 18px;
+    font-size: 34px;
+    letter-spacing: -0.7px;
+  }
+
+  .home .lead {
+    font-size: 16px;
+  }
+
+  .home .description {
+    font-size: 14px;
+  }
+
+  /* Button */
+
+  .home .actions {
+    width: 100%;
+    margin-top: 25px;
+  }
+
+  .home .button {
+    width: 100%;
+  }
+
+  /* Hero image */
+
+  .home .media img {
+    max-height: 300px;
+    border-radius: 12px;
+    clip-path: inset(0 round 12px);
+  }
+
+  /* Information section */
+
+  .home .section {
+    padding: 50px 0;
+  }
+
+  .home .heading {
+    margin-bottom: 26px;
+  }
+
+  .home .heading h2 {
+    font-size: 25px;
+  }
+
+  .home .heading p {
+    font-size: 14px;
+  }
+
+  /* Cards */
+
+  .home .grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .home .card {
+    min-height: auto;
+    padding: 25px;
+  }
+
+  .home .number {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 20px;
+  }
+
+  .home .card h3 {
+    font-size: 19px;
+  }
+
+  .home .card > p {
+    font-size: 14px;
+  }
+
+  .home .details {
+    gap: 10px;
+    padding-top: 18px;
+  }
+
+  .home .details li {
+    font-size: 13px;
+  }
 }

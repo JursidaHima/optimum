@@ -2,9 +2,9 @@ import { query } from "../config/db.js";
 import { ApiError } from "../middleware/errorHandler.js";
 import { assertOwnsProject } from "./projectsController.js";
 
-export async function getResults(req, res) {
-  const runId = req.params.runId;
-
+// Loads a run with its allocations and constraint checks.
+// userId = only that user's runs; null = any run (administrators).
+async function loadResults(runId, userId) {
   const runs = await query(
     `
       SELECT
@@ -18,10 +18,10 @@ export async function getResults(req, res) {
       INNER JOIN Projects p
         ON p.project_id = r.project_id
       WHERE r.run_id = ?
-        AND p.user_id = ?
+        ${userId === null ? "" : "AND p.user_id = ?"}
       LIMIT 1
     `,
-    [runId, req.user.id],
+    userId === null ? [runId] : [runId, userId],
   );
 
   if (runs.length === 0) {
@@ -65,9 +65,15 @@ export async function getResults(req, res) {
     [runId],
   );
 
-  res.json({
-    run,
-    allocations,
-    constraints,
-  });
+  return { run, allocations, constraints };
+}
+
+// GET /api/optimization-runs/:runId  (the owner of the run)
+export async function getResults(req, res) {
+  res.json(await loadResults(req.params.runId, req.user.id));
+}
+
+// GET /api/admin/runs/:runId/results  (administrators, any user's run)
+export async function getResultsAdmin(req, res) {
+  res.json(await loadResults(req.params.runId, null));
 }

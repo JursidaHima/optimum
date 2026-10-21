@@ -19,8 +19,13 @@ export async function assertOwnsProject(projectId, userId) {
 // GET /api/projects
 export async function listProjects(req, res) {
   const rows = await query(
-    `SELECT p.*, (SELECT COUNT(*) FROM Models m WHERE m.project_id = p.project_id) AS model_count
-     FROM Projects p WHERE p.user_id = ? ORDER BY p.updated_at DESC`,
+    `SELECT p.*,
+     (SELECT COUNT(*) FROM Models m WHERE m.project_id = p.project_id) AS model_count,
+     (SELECT r.status FROM Optimization_Runs r WHERE r.project_id = p.project_id
+        ORDER BY r.created_at DESC, r.run_id DESC LIMIT 1) AS last_status,
+     (SELECT r.error_message FROM Optimization_Runs r WHERE r.project_id = p.project_id
+        ORDER BY r.created_at DESC, r.run_id DESC LIMIT 1) AS last_error
+   FROM Projects p WHERE p.user_id = ? ORDER BY p.updated_at DESC`,
     [req.user.id],
   );
   res.json({ projects: rows });

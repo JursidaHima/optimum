@@ -34,6 +34,9 @@ import AdminTemplates from "./pages/admin/AdminTemplates.jsx";
 import AdminJobs from "./pages/admin/AdminJobs.jsx";
 import AdminAuditLog from "./pages/admin/AdminAuditLog.jsx";
 
+
+
+
 export default function App() {
   return (
     <Routes>
@@ -74,6 +77,8 @@ export default function App() {
           <Route path="templates" element={<AdminTemplates />} />
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="audit-log" element={<AdminAuditLog />} />
+       
+          <Route path="results/:runId" element={<OptimizationResults admin />} />
         </Route>
       </Route>
     </Routes>

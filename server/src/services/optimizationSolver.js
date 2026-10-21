@@ -9,7 +9,8 @@ function sanitizeVariableName(name, index) {
     .trim()
     .replace(/[^a-zA-Z0-9_]/g, "_");
 
-  return `${cleaned || "asset"}_${index}`;
+  // Always start with a letter: LP variable names cannot begin with a digit
+  return `x${index}_${cleaned || "asset"}`;
 }
 
 function getConstraintExpression(constraint, assets) {
@@ -31,7 +32,7 @@ function getConstraintExpression(constraint, assets) {
       .join(" + ");
   }
 
- // Expected return constraint
+  // Expected return constraint
   if (type.includes("return")) {
     return assets
       .map(

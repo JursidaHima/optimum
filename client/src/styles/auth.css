@@ -86,7 +86,7 @@
   font-size: 0.92rem;
   font-weight: 500;
 }
-// Success Box for password reset confirmation
+/* Success Box for password reset confirmation */
 .wrapper .success-box {
   margin: 0 0 1.25rem;
   padding: 0.8rem 1rem;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { getOptimizationResults } from "../services/resultsApi";
+import { adminApi } from "../services/adminApi";
 import StatusBadge from "../components/StatusBadge.jsx";
 import RunStatusSteps from "../components/RunStatusSteps.jsx";
 import {
@@ -17,7 +18,8 @@ import "../styles/optimization-results.css";
 const POLL_MS = 1500;
 const CHART_COLORS = ["#0f766e", "#12263f", "#d97706", "#7c3aed", "#0284c7", "#be123c", "#65a30d", "#6b7280"];
 
-export default function OptimizationResults() {
+// admin = true when an administrator opens a run from Solver & Jobs
+export default function OptimizationResults({ admin = false }) {
   const { runId } = useParams();
   const navigate = useNavigate();
 
@@ -25,6 +27,9 @@ export default function OptimizationResults() {
   // that the server saved): run summary, allocations and constraint checks.
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+
+  const backPath = admin ? "/admin/jobs" : "/dashboard/history";
+  const backLabel = admin ? "← Back to Jobs" : "← Back to History";
 
   const status = data?.run?.status;
   const finished = isFinished(status);
@@ -36,7 +41,7 @@ export default function OptimizationResults() {
 
     async function load() {
       try {
-        const response = await getOptimizationResults(runId);
+        const response = admin ? await adminApi.getRunResults(runId) : await getOptimizationResults(runId);
         if (cancelled) return;
         setData(response);
         setError("");
@@ -51,7 +56,7 @@ export default function OptimizationResults() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [runId]);
+  }, [runId, admin]);
 
   if (error) {
     return (
@@ -59,8 +64,8 @@ export default function OptimizationResults() {
         <div className="optimization-results__error" role="alert">
           <h2>Unable to load optimization results</h2>
           <p>{error}</p>
-          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/history")}>
-            ← Back to History
+          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate(backPath)}>
+            {backLabel}
           </button>
         </div>
       </main>
@@ -119,9 +124,11 @@ export default function OptimizationResults() {
         <section className="optimization-results__error" role="alert">
           <h2>Optimization failed</h2>
           <p>{run.error_message || "The solver could not produce a solution."}</p>
-          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/model-builder")}>
-            Edit Model
-          </button>
+          {!admin && (
+            <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/model-builder")}>
+              Edit Model
+            </button>
+          )}
         </section>
       )}
 
@@ -256,8 +263,8 @@ export default function OptimizationResults() {
       )}
 
       <footer className="optimization-results__actions">
-        <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/history")}>
-          ← Back to History
+        <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate(backPath)}>
+          {backLabel}
         </button>
         {completed && (
           <button type="button" className="btn btn--primary btn--sm" onClick={() => window.print()}>

@@ -16,7 +16,8 @@ export default function RunOptimization() {
 
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [model, setModel] = useState(null);
+  const [models, setModels] = useState([]);
+  const [modelId, setModelId] = useState("");
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingModel, setLoadingModel] = useState(false);
   const [error, setError] = useState("");
@@ -26,6 +27,7 @@ export default function RunOptimization() {
   const [starting, setStarting] = useState(false);
   const pollTimer = useRef(null);
 
+  const model = models.find((m) => String(m.model_id) === String(modelId)) || null;
   const running = starting || (run && !isFinished(run.status));
 
   useEffect(() => () => clearTimeout(pollTimer.current), []);
@@ -45,35 +47,50 @@ export default function RunOptimization() {
     loadProjects();
   }, []);
 
-  // 2. Load the model whenever a project is selected
+  // 2. Load ALL models of the project whenever a project is selected
   useEffect(() => {
     if (!selectedProjectId) {
-      setModel(null);
-      return;
+      setModels([]);
+      setModelId("");
+      return undefined;
     }
 
-    async function loadModelForProject() {
+    let cancelled = false;
+    async function loadModels() {
       setLoadingModel(true);
       setError("");
       try {
-        const data = await modelsApi.get(selectedProjectId);
-        if (!data.model) throw new Error("No model");
-        setModel(data.model);
-      } catch {
-        setModel(null);
-        setError("No model found for this project. Please build a model first.");
+        const data = await modelsApi.list(selectedProjectId);
+        if (cancelled) return;
+        const list = data.models || [];
+        setModels(list);
+        setModelId(list.length ? String(list[0].model_id) : "");
+      } catch (err) {
+        if (cancelled) return;
+        setModels([]);
+        setModelId("");
+        setError(err.message || "Unable to load the models of this project.");
       } finally {
-        setLoadingModel(false);
+        if (!cancelled) setLoadingModel(false);
       }
     }
 
-    loadModelForProject();
+    loadModels();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedProjectId]);
 
   function selectProject(projectId) {
     clearTimeout(pollTimer.current);
     setRun(null);
     setSelectedProjectId(projectId);
+  }
+
+  function selectModel(id) {
+    clearTimeout(pollTimer.current);
+    setRun(null);
+    setModelId(id);
   }
 
   // Poll the run until it is Completed or Failed.
@@ -94,7 +111,7 @@ export default function RunOptimization() {
 
   async function handleRun() {
     if (!model || !selectedProjectId) {
-      setError("Please select a project and ensure a model exists before running.");
+      setError("Please select a project and a model before running.");
       return;
     }
 
@@ -123,7 +140,7 @@ export default function RunOptimization() {
       <header className="optimization__header">
         <div>
           <h1>Run Optimization</h1>
-          <p>Select a project and solve its model using the HiGHS optimization solver.</p>
+          <p>Select a project, choose one of its models, and solve it with the HiGHS optimization solver.</p>
         </div>
       </header>
 
@@ -164,21 +181,40 @@ export default function RunOptimization() {
             </section>
           ) : (
             <section className="optimization__card">
-              <h2>{model.model_name || "Model Configuration"}</h2>
+              <h2>Choose a model</h2>
+              <p>{models.length} model{models.length === 1 ? "" : "s"} in this project. Pick the one to run.</p>
 
-              <div className="optimization__summary">
-                <div>
-                  <span>Objective</span>
-                  <strong>{model.objective_type || "N/A"}</strong>
-                </div>
-                <div>
-                  <span>Total Budget</span>
-                  <strong>{model.total_budget ? `$${Number(model.total_budget).toLocaleString()}` : "N/A"}</strong>
-                </div>
-              </div>
+              <ul className="models">
+                {models.map((m) => {
+                  const on = String(m.model_id) === String(modelId);
+                  return (
+                    <li key={m.model_id}>
+                      <label className={on ? "on" : ""}>
+                        <input
+                          type="radio"
+                          name="model"
+                          value={m.model_id}
+                          checked={on}
+                          disabled={running}
+                          onChange={() => selectModel(String(m.model_id))}
+                        />
+                        <span>
+                          <strong>{m.model_name}</strong>
+                          <small>
+                            {m.objective_type} · {m.asset_count} asset{Number(m.asset_count) === 1 ? "" : "s"}
+                          </small>
+                        </span>
+                        <span className="budget">
+                          {m.total_budget ? `$${Number(m.total_budget).toLocaleString()}` : "N/A"}
+                        </span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
 
               <button type="button" className="btn btn--primary" disabled={running} onClick={handleRun}>
-                {running ? "Running Optimization..." : "Run Optimization"}
+                {running ? "Running Optimization..." : `Run "${model?.model_name}"`}
               </button>
 
               {run && (

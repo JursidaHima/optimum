@@ -45,6 +45,30 @@ export async function getOverview(req, res) {
     runs[row.status] = Number(row.count);
   }
 
+  // System performance
+  const [perf] = await query(`
+    SELECT
+      AVG(CASE WHEN status = 'Completed' THEN solve_duration_ms END) AS avg_ms,
+      MAX(solve_duration_ms) AS max_ms,
+      SUM(created_at >= NOW() - INTERVAL 24 HOUR) AS runs_24h,
+      SUM(status = 'Failed' AND created_at >= NOW() - INTERVAL 24 HOUR) AS failed_24h
+    FROM Optimization_Runs
+  `);
+  const finished = runs.Completed + runs.Failed;
+
+  // The five most recent failed jobs
+  const recentFailed = await query(`
+    SELECT o.run_id, o.error_message, o.created_at,
+           p.project_name, m.model_name, u.email
+    FROM Optimization_Runs o
+    JOIN Projects p ON p.project_id = o.project_id
+    JOIN Models m ON m.model_id = o.model_id
+    JOIN Users u ON u.user_id = p.user_id
+    WHERE o.status = 'Failed'
+    ORDER BY o.created_at DESC, o.run_id DESC
+    LIMIT 5
+  `);
+
   const activity = await query(`
     SELECT a.log_id, a.user_id, a.action_type,
            a.details, a.timestamp, u.email
@@ -63,6 +87,14 @@ export async function getOverview(req, res) {
     projects: Number(projects.total),
     templates: Number(templates.total),
     runs,
+    performance: {
+      avgSolveMs: perf?.avg_ms == null ? null : Number(perf.avg_ms),
+      maxSolveMs: perf?.max_ms == null ? null : Number(perf.max_ms),
+      failureRate: finished > 0 ? runs.Failed / finished : 0,
+      runsLast24h: Number(perf?.runs_24h || 0),
+      failedLast24h: Number(perf?.failed_24h || 0),
+    },
+    recentFailed,
     recentActivity: activity,
   });
 }
@@ -350,12 +382,10 @@ export async function createTemplate(req, res) {
     "ADMIN_TEMPLATE_CREATED",
     `Template #${result.insertId} "${t.templateName}".`,
   );
-  res
-    .status(201)
-    .json({
-      template: await findTemplate(result.insertId),
-      message: MESSAGES.templateCreated,
-    });
+  res.status(201).json({
+    template: await findTemplate(result.insertId),
+    message: MESSAGES.templateCreated,
+  });
 }
 
 // PUT /api/admin/templates/:id
@@ -418,8 +448,12 @@ export async function listJobs(req, res) {
   for (const row of counts) summary[row.status] = Number(row.count);
 
   const [perf] = await query(
-    `SELECT AVG(solve_duration_ms) AS avg_ms
-     FROM Optimization_Runs WHERE status = 'Completed' AND solve_duration_ms IS NOT NULL`,
+    `SELECT
+       AVG(CASE WHEN status = 'Completed' THEN solve_duration_ms END) AS avg_ms,
+       MAX(solve_duration_ms) AS max_ms,
+       SUM(created_at >= NOW() - INTERVAL 24 HOUR) AS runs_24h,
+       SUM(status = 'Failed' AND created_at >= NOW() - INTERVAL 24 HOUR) AS failed_24h
+     FROM Optimization_Runs`,
   );
   const finished = summary.Completed + summary.Failed;
 
@@ -431,6 +465,9 @@ export async function listJobs(req, res) {
         perf?.avg_ms === null || perf?.avg_ms === undefined
           ? null
           : Number(perf.avg_ms),
+      maxSolveMs: perf?.max_ms == null ? null : Number(perf.max_ms),
+      runsLast24h: Number(perf?.runs_24h || 0),
+      failedLast24h: Number(perf?.failed_24h || 0),
       failureRate: finished > 0 ? summary.Failed / finished : 0,
     },
   });

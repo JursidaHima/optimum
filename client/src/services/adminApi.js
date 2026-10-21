@@ -32,6 +32,7 @@ export const adminApi = {
     ),
   retryJob: (runId) =>
     apiRequest(`/admin/jobs/${runId}/retry`, { method: "POST" }),
+  getRunResults: (runId) => apiRequest(`/admin/runs/${runId}/results`),
 
   listAuditLogs: (limit = 100) =>
     apiRequest(`/admin/audit-logs?limit=${limit}`),

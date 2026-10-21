@@ -15,6 +15,7 @@ import {
   retryJob,
   listAuditLogs,
 } from "../controllers/adminController.js";
+import { getResultsAdmin } from "../controllers/resultsController.js";
 
 const router = Router();
 
@@ -36,6 +37,7 @@ router.delete("/templates/:id", deleteTemplate);
 
 router.get("/jobs", listJobs);
 router.post("/jobs/:runId/retry", retryJob);
+router.get("/runs/:runId/results", getResultsAdmin);
 
 router.get("/audit-logs", listAuditLogs);
 

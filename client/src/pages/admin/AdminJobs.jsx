@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import StatusBadge from "../../components/StatusBadge.jsx";
 import { adminApi } from "../../services/adminApi";
 import { formatDateTime, formatDuration, RUN_STATUSES } from "../../utils/format";
 
 export default function AdminJobs() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -48,16 +50,22 @@ export default function AdminJobs() {
 
       {notice && <p className="alert alert--success" role="status">{notice}</p>}
       {error && <p className="alert alert--error" role="alert">{error}</p>}
-{/* 
       {data && (
-        <div className="admin__kpis admin__kpis--6">
-          {RUN_STATUSES.map((s) => (
-            <div key={s} className="admin__kpi"><span><StatusBadge status={s} /></span><strong>{data.summary[s]}</strong></div>
-          ))}
-          <div className="admin__kpi"><span>Avg solve time</span><strong>{formatDuration(data.summary.avgSolveMs)}</strong></div>
-          <div className="admin__kpi"><span>Failure rate</span><strong>{(data.summary.failureRate * 100).toFixed(0)}%</strong></div>
-        </div>
-      )} */}
+        <>
+          <div className="admin__kpis admin__kpis--6">
+            {RUN_STATUSES.map((s) => (
+              <div key={s} className="admin__kpi"><span><StatusBadge status={s} /></span><strong>{data.summary[s]}</strong></div>
+            ))}
+            <div className="admin__kpi"><span>Avg solve time</span><strong>{formatDuration(data.summary.avgSolveMs)}</strong></div>
+            <div className="admin__kpi"><span>Failure rate</span><strong>{(data.summary.failureRate * 100).toFixed(0)}%</strong></div>
+          </div>
+          <div className="admin__kpis admin__kpis--3">
+            <div className="admin__kpi"><span>Slowest solve</span><strong>{formatDuration(data.summary.maxSolveMs)}</strong></div>
+            <div className="admin__kpi"><span>Runs in last 24 h</span><strong>{data.summary.runsLast24h}</strong></div>
+            <div className="admin__kpi"><span>Failed in last 24 h</span><strong>{data.summary.failedLast24h}</strong></div>
+          </div>
+        </>
+      )}
 
       <div className="admin__card admin__filters">
         <label className="admin__filter">
@@ -67,7 +75,8 @@ export default function AdminJobs() {
             {RUN_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        {/* <button type="button" className="btn btn--ghost btn--sm btn--dark" onClick={load}>Refresh</button> */}
+        <button type="button" className="btn btn--ghost btn--sm btn--dark" onClick={() => setStatus("Failed")}>Show failed only</button>
+        <button type="button" className="btn btn--ghost btn--sm btn--dark" onClick={load}>Refresh</button>
       </div>
 
       <div className="admin__card">
@@ -93,6 +102,7 @@ export default function AdminJobs() {
                     retrying={retrying === job.run_id}
                     onToggle={() => setOpenLog(openLog === job.run_id ? null : job.run_id)}
                     onRetry={() => onRetry(job)}
+                    onView={() => navigate(`/admin/results/${job.run_id}`)}
                   />
                 ))}
               </tbody>
@@ -104,8 +114,9 @@ export default function AdminJobs() {
   );
 }
 
-function FragmentRow({ job, open, retrying, onToggle, onRetry }) {
+function FragmentRow({ job, open, retrying, onToggle, onRetry, onView }) {
   const failed = job.status === "Failed";
+  const completed = job.status === "Completed";
   return (
     <>
       <tr>
@@ -117,6 +128,7 @@ function FragmentRow({ job, open, retrying, onToggle, onRetry }) {
         <td>{formatDateTime(job.started_at || job.created_at)}</td>
         <td>{formatDuration(job.duration_ms)}</td>
         <td className="admin__row-actions">
+          {completed && <button type="button" className="admin__link-btn" onClick={onView}>View results</button>}
           {failed && <button type="button" className="admin__link-btn" onClick={onToggle}>{open ? "Hide log" : "Error log"}</button>}
           {failed && (
             <button type="button" className="admin__link-btn" onClick={onRetry} disabled={retrying}>

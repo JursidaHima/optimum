@@ -94,3 +94,22 @@ export async function createDataset(req, res) {
     rowCount: rows.length,
   });
 }
+
+// GET /api/projects/:id/datasets/:datasetId/rows
+export async function getDatasetRows(req, res) {
+  const { id: projectId, datasetId } = req.params;
+  await assertOwnsProject(projectId, req.user.id);
+
+  const [dataset] = await query(
+    "SELECT dataset_id FROM Datasets WHERE dataset_id = ? AND project_id = ?",
+    [datasetId, projectId],
+  );
+  if (!dataset) throw new ApiError(404, "Dataset not found in this project.");
+
+  const rows = await query(
+    `SELECT ticker_or_asset, historical_return, volatility
+     FROM Portfolio_Rows WHERE dataset_id = ? ORDER BY row_id ASC`,
+    [datasetId],
+  );
+  res.json({ rows });
+}

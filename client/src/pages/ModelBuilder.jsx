@@ -1,30 +1,29 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../styles/model-builder.css";
 
 import { projectsApi } from "../services/projectsApi";
 import { modelsApi } from "../services/modelsApi";
 
-export default function ModelBuilder() {
-  const navigate = useNavigate();
+const EMPTY_ASSET = {
+  assetName: "",
+  expectedReturn: "",
+  riskScore: "",
+  minAllocation: 0,
+  maxAllocation: 100,
+};
 
+export default function ModelBuilder() {
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState("");
+
+  // All models of the selected project, and the one being edited ("" = new model)
+  const [models, setModels] = useState([]);
+  const [modelId, setModelId] = useState("");
 
   const [modelName, setModelName] = useState("");
   const [objectiveType, setObjectiveType] = useState("Maximize Return");
   const [totalBudget, setTotalBudget] = useState("");
-
-  const [assets, setAssets] = useState([
-    {
-      assetName: "",
-      expectedReturn: "",
-      riskScore: "",
-      minAllocation: 0,
-      maxAllocation: 100,
-    },
-  ]);
-
+  const [assets, setAssets] = useState([{ ...EMPTY_ASSET }]);
   const [constraints, setConstraints] = useState([]);
 
   const [loadingProjects, setLoadingProjects] = useState(true);
@@ -34,120 +33,117 @@ export default function ModelBuilder() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  /*
-   * Load the user's projects when the page opens.
-   */
+  function resetForm() {
+    setModelName("");
+    setObjectiveType("Maximize Return");
+    setTotalBudget("");
+    setAssets([{ ...EMPTY_ASSET }]);
+    setConstraints([]);
+  }
+
+  // Load the user's projects when the page opens.
   useEffect(() => {
     async function loadProjects() {
       try {
         setLoadingProjects(true);
         setError("");
-
         const data = await projectsApi.list();
-
         setProjects(data.projects || []);
       } catch (err) {
-        setError(
-          err.message || "Unable to load your projects."
-        );
+        setError(err.message || "Unable to load your projects.");
       } finally {
         setLoadingProjects(false);
       }
     }
-
     loadProjects();
   }, []);
 
-  /*
-   * Load the selected project's model.
-   */
+  // When the project changes: load its models and open the newest one.
   useEffect(() => {
+    setMessage("");
+    setError("");
+
     if (!projectId) {
-      return;
+      setModels([]);
+      setModelId("");
+      resetForm();
+      return undefined;
     }
 
+    let cancelled = false;
+    async function loadModels() {
+      try {
+        setLoadingModel(true);
+        const data = await modelsApi.list(projectId);
+        if (cancelled) return;
+        const list = data.models || [];
+        setModels(list);
+        setModelId(list.length ? String(list[0].model_id) : "");
+        if (!list.length) resetForm();
+      } catch (err) {
+        if (!cancelled) setError(err.message || "Unable to load the models.");
+      } finally {
+        if (!cancelled) setLoadingModel(false);
+      }
+    }
+    loadModels();
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  // When a model is picked: load its assets and constraints into the form.
+  useEffect(() => {
+    if (!projectId || !modelId) return undefined;
+
+    let cancelled = false;
     async function loadModel() {
       try {
         setLoadingModel(true);
-        setError("");
-        setMessage("");
-
-        const data = await modelsApi.get(projectId);
-
-        if (!data.model) {
-          setModelName("");
-          setObjectiveType("Maximize Return");
-          setTotalBudget("");
-
-          setAssets([
-            {
-              assetName: "",
-              expectedReturn: "",
-              riskScore: "",
-              minAllocation: 0,
-              maxAllocation: 100,
-            },
-          ]);
-
-          setConstraints([]);
-
-          return;
-        }
+        const data = await modelsApi.get(projectId, modelId);
+        if (cancelled || !data.model) return;
 
         setModelName(data.model.model_name || "");
-
-        setObjectiveType(
-          data.model.objective_type || "Maximize Return"
-        );
-
-        setTotalBudget(
-          data.model.total_budget ?? ""
-        );
+        setObjectiveType(data.model.objective_type || "Maximize Return");
+        setTotalBudget(data.model.total_budget ?? "");
 
         setAssets(
           data.assets?.length
             ? data.assets.map((asset) => ({
                 assetName: asset.asset_name || "",
-                expectedReturn:
-                  asset.expected_return ?? "",
+                expectedReturn: asset.expected_return ?? "",
                 riskScore: asset.risk_score ?? "",
-                minAllocation:
-                  asset.min_allocation ?? 0,
-                maxAllocation:
-                  asset.max_allocation ?? 100,
+                minAllocation: asset.min_allocation ?? 0,
+                maxAllocation: asset.max_allocation ?? 100,
               }))
-            : [
-                {
-                  assetName: "",
-                  expectedReturn: "",
-                  riskScore: "",
-                  minAllocation: 0,
-                  maxAllocation: 100,
-                },
-              ]
+            : [{ ...EMPTY_ASSET }]
         );
 
         setConstraints(
           data.constraints?.map((constraint) => ({
-            constraintType:
-              constraint.constraint_type || "",
-            operator:
-              constraint.operator || "<=",
-            targetValue:
-              constraint.target_value ?? "",
+            constraintType: constraint.constraint_type || "",
+            operator: constraint.operator || "<=",
+            targetValue: constraint.target_value ?? "",
           })) || []
         );
       } catch (err) {
-        setError(
-          err.message || "Unable to load the model."
-        );
+        if (!cancelled) setError(err.message || "Unable to load the model.");
       } finally {
-        setLoadingModel(false);
+        if (!cancelled) setLoadingModel(false);
       }
     }
-
     loadModel();
-  }, [projectId]);
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId, modelId]);
+
+  function pickModel(value) {
+    setError("");
+    setMessage("");
+    setModelId(value);
+    if (!value) resetForm(); // "+ New model"
+  }
 
   /*
    * Asset functions
@@ -227,8 +223,10 @@ export default function ModelBuilder() {
 
   /*
    * Save Model
+   * asNew = false -> update the selected model (or create it if none selected)
+   * asNew = true  -> keep the selected model and save a NEW one
    */
-  async function handleSubmit(event) {
+  async function handleSubmit(event, asNew = false) {
     event.preventDefault();
 
     setError("");
@@ -261,43 +259,62 @@ export default function ModelBuilder() {
       }
     }
 
+    const body = {
+      modelName: modelName.trim(),
+      objectiveType,
+      totalBudget: Number(totalBudget),
+      assets: assets.map((asset) => ({
+        assetName: asset.assetName.trim(),
+        expectedReturn: Number(asset.expectedReturn),
+        riskScore: Number(asset.riskScore),
+        minAllocation: Number(asset.minAllocation),
+        maxAllocation: Number(asset.maxAllocation),
+      })),
+      constraints: constraints.map((constraint) => ({
+        constraintType: constraint.constraintType.trim(),
+        operator: constraint.operator,
+        targetValue: Number(constraint.targetValue),
+      })),
+    };
+    if (modelId && !asNew) body.modelId = Number(modelId);
+
     try {
       setSaving(true);
+      const res = await modelsApi.save(projectId, body);
 
-      await modelsApi.save(projectId, {
-        modelName: modelName.trim(),
-        objectiveType,
-        totalBudget: Number(totalBudget),
+      const data = await modelsApi.list(projectId);
+      setModels(data.models || []);
+      setModelId(String(res.modelId));
 
-        assets: assets.map((asset) => ({
-          assetName: asset.assetName.trim(),
-          expectedReturn:
-            Number(asset.expectedReturn),
-          riskScore:
-            Number(asset.riskScore),
-          minAllocation:
-            Number(asset.minAllocation),
-          maxAllocation:
-            Number(asset.maxAllocation),
-        })),
-
-        constraints: constraints.map(
-          (constraint) => ({
-            constraintType:
-              constraint.constraintType.trim(),
-            operator:
-              constraint.operator,
-            targetValue:
-              Number(constraint.targetValue),
-          })
-        ),
-      });
-
-      setMessage("Model saved successfully.");
+      setMessage(asNew ? "Saved as a new model." : "Model saved successfully.");
     } catch (err) {
-      setError(
-        err.message || "Unable to save the model."
-      );
+      setError(err.message || "Unable to save the model.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  /*
+   * Delete the selected model (its runs are deleted with it)
+   */
+  async function handleDelete() {
+    const current = models.find((m) => String(m.model_id) === String(modelId));
+    if (!current) return;
+    if (!window.confirm(`Delete "${current.model_name}"? Its run history will be deleted too.`)) return;
+
+    try {
+      setSaving(true);
+      setError("");
+      await modelsApi.remove(projectId, modelId);
+
+      const data = await modelsApi.list(projectId);
+      const list = data.models || [];
+      setModels(list);
+      setModelId(list.length ? String(list[0].model_id) : "");
+      if (!list.length) resetForm();
+      setMessage("Model deleted.");
+    } catch (err) {
+      setError(err.message || "Unable to delete the model.");
     } finally {
       setSaving(false);
     }
@@ -369,6 +386,25 @@ export default function ModelBuilder() {
               ))}
             </select>
           </div>
+          {projectId && (
+            <div className="form-group">
+              <label htmlFor="model">Model</label>
+              <select
+                id="model"
+                value={modelId}
+                onChange={(event) => pickModel(event.target.value)}
+                disabled={loadingModel}
+              >
+                <option value="">+ New model</option>
+                {models.map((model) => (
+                  <option key={model.model_id} value={model.model_id}>
+                    {model.model_name} · {model.objective_type} · {model.asset_count} asset
+                    {Number(model.asset_count) === 1 ? "" : "s"}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </section>
 
         {/* MODEL INFORMATION */}
@@ -671,18 +707,20 @@ export default function ModelBuilder() {
         {/* SAVE & ACTIONS */}
         <div className="model-builder__actions">
           <button type="submit" disabled={saving}>
-            {saving ? "Saving..." : "Save Model"}
+            {saving ? "Saving..." : modelId ? "Update Model" : "Save Model"}
           </button>
 
-          {/* <button
-            type="button"
-            onClick={() =>
-              navigate(`/dashboard/projects/${projectId}/run`)
-            }
-            disabled={!projectId}
-          >
-            Run Optimization
-          </button> */}
+          {modelId && (
+            <button type="button" disabled={saving} onClick={(event) => handleSubmit(event, true)}>
+              Save as new model
+            </button>
+          )}
+
+          {modelId && (
+            <button type="button" className="danger" disabled={saving} onClick={handleDelete}>
+              Delete Model
+            </button>
+          )}
         </div>
       </form>
     </main>

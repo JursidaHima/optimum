@@ -7,4 +7,7 @@ export const datasetsApi = {
       method: "POST",
       body,
     }),
+  // The asset rows of one dataset
+  rows: (projectId, datasetId) =>
+    apiRequest(`/projects/${projectId}/datasets/${datasetId}/rows`),
 };

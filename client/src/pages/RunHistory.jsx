@@ -2,133 +2,173 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { projectsApi } from "../services/projectsApi";
 import { getRunHistory } from "../services/historyApi";
+import { getOptimizationResults } from "../services/resultsApi";
 import StatusBadge from "../components/StatusBadge.jsx";
 import { formatDateTime, formatPercent, isFinished, RUN_STATUSES } from "../utils/format";
 import "../styles/run-history.css";
 
-const ALL = "All statuses";
+const ALL_STATUS = "All statuses";
+const ALL_PROJECTS = "all";
+
+function asNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function money(value) {
+  const n = asNumber(value);
+  return n === null ? "—" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+}
+
+function number(value) {
+  const n = asNumber(value);
+  return n === null ? "—" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 4 }).format(n);
+}
+
+function percent(value) {
+  const n = asNumber(value);
+  return n === null ? "—" : formatPercent(n);
+}
 
 export default function RunHistory() {
   const navigate = useNavigate();
-
   const [projects, setProjects] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState(ALL);
-  const [history, setHistory] = useState([]);
-  const [loadingProjects, setLoadingProjects] = useState(true);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [projectId, setProjectId] = useState(ALL_PROJECTS);
+  const [status, setStatus] = useState(ALL_STATUS);
+  const [runs, setRuns] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [comparison, setComparison] = useState(null);
+  const [comparing, setComparing] = useState(false);
+  const [compareError, setCompareError] = useState("");
 
-  // Load projects on mount and default to the first project
   useEffect(() => {
-    async function loadProjects() {
-      try {
-        const data = await projectsApi.list();
-        const projectList = Array.isArray(data) ? data : data.projects || [];
-        setProjects(projectList);
-        if (projectList.length > 0) {
-          setSelectedProjectId(projectList[0].project_id || projectList[0].id);
-        }
-      } catch (err) {
-        setError(err.message || "Unable to load projects.");
-      } finally {
-        setLoadingProjects(false);
-      }
-    }
-    loadProjects();
+    projectsApi.list()
+      .then((data) => setProjects(Array.isArray(data) ? data : data.projects || []))
+      .catch((err) => setError(err.message || "Unable to load projects."));
   }, []);
 
-  const loadHistory = useCallback(async (projectId, { quiet = false } = {}) => {
-    if (!quiet) setLoadingHistory(true);
-    setError("");
+  const load = useCallback(async (id, { quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
+    if (!quiet) setError("");
     try {
-      const data = await getRunHistory(projectId);
-      setHistory(Array.isArray(data) ? data : data.runs || []);
-    } catch {
-      setError("Unable to load run history for this project.");
-      setHistory([]);
+      const data = await getRunHistory(id);
+      setRuns(Array.isArray(data) ? data : data.runs || []);
+    } catch (err) {
+      setError(err.message || "Unable to load run history.");
+      if (!quiet) setRuns([]);
     } finally {
-      if (!quiet) setLoadingHistory(false);
+      if (!quiet) setLoading(false);
     }
   }, []);
 
-  // Fetch history whenever the selected project changes
   useEffect(() => {
-    if (!selectedProjectId) {
-      setHistory([]);
-      return;
-    }
-    loadHistory(selectedProjectId);
-  }, [selectedProjectId, loadHistory]);
+    setSelectedIds([]);
+    setComparison(null);
+    setCompareError("");
+    load(projectId);
+  }, [projectId, load]);
 
-  // Keep Pending / Running rows live until they finish.
-  const hasActive = history.some((run) => !isFinished(run.status));
+  const active = runs.some((run) => !isFinished(run.status));
   useEffect(() => {
-    if (!hasActive || !selectedProjectId) return undefined;
-    const timer = setInterval(() => loadHistory(selectedProjectId, { quiet: true }), 3000);
+    if (!active) return undefined;
+    const timer = setInterval(() => load(projectId, { quiet: true }), 3000);
     return () => clearInterval(timer);
-  }, [hasActive, selectedProjectId, loadHistory]);
+  }, [active, projectId, load]);
 
-  const filteredHistory = history.filter(
-    (run) => selectedStatus === ALL || run.status === selectedStatus,
-  );
+  const shown = runs.filter((run) => status === ALL_STATUS || run.status === status);
+  const showProject = projectId === ALL_PROJECTS;
+  const projectName = showProject
+    ? "all projects"
+    : projects.find((p) => String(p.project_id ?? p.id) === String(projectId))?.project_name || "this project";
 
-  const selectedProject = projects.find(
-    (p) => String(p.project_id || p.id) === String(selectedProjectId),
-  );
-  const selectedProjectName = selectedProject?.project_name || selectedProject?.name || "Project";
+  function toggleSelection(runId) {
+    const id = String(runId);
+    setComparison(null);
+    setCompareError("");
+    setSelectedIds((current) => current.includes(id)
+      ? current.filter((item) => item !== id)
+      : current.length < 2 ? [...current, id] : current);
+  }
 
-  if (loadingProjects) {
-    return <div className="run-history">Loading projects...</div>;
+  async function compareSelected() {
+    if (selectedIds.length !== 2) return;
+    setComparing(true);
+    setCompareError("");
+    setComparison(null);
+    try {
+      const results = await Promise.all(selectedIds.map((id) => getOptimizationResults(id)));
+      if (results.some((result) => !result?.run || result.run.status !== "Completed")) {
+        throw new Error("Both runs must have completed results to compare.");
+      }
+      setComparison(results);
+    } catch (err) {
+      setCompareError(err.message || "Unable to compare the selected runs.");
+    } finally {
+      setComparing(false);
+    }
+  }
+
+  const allocationA = comparison?.[0]?.allocations || [];
+  const allocationB = comparison?.[1]?.allocations || [];
+  const assetNames = [...new Set([
+    ...allocationA.map((item) => item.asset_name),
+    ...allocationB.map((item) => item.asset_name),
+  ].filter(Boolean))].sort();
+
+  function allocationValue(items, assetName, field) {
+    const asset = items.find((item) => item.asset_name === assetName);
+    return asset ? asNumber(asset[field]) : 0;
   }
 
   return (
-    <main className="run-history">
-      <header className="run-history__header">
+    <main className="history">
+      <div className="head">
         <h1>History</h1>
-        <p>Review your previous optimization runs.</p>
-      </header>
+        <p>Review previous optimization runs and compare saved results.</p>
+      </div>
 
-      {error && <div className="run-history__error" role="alert">{error}</div>}
+      {error && <div className="bad" role="alert">{error}</div>}
 
-      <section className="run-history__card run-history__filters">
-        <div className="run-history__filter">
+      <section className="card filters">
+        <div className="pick">
           <label htmlFor="history-project">Project:</label>
-          <select id="history-project" value={selectedProjectId} onChange={(e) => setSelectedProjectId(e.target.value)}>
-            {projects.map((proj) => (
-              <option key={proj.project_id || proj.id} value={proj.project_id || proj.id}>
-                {proj.project_name || proj.name}
+          <select id="history-project" value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+            <option value={ALL_PROJECTS}>All projects</option>
+            {projects.map((p) => (
+              <option key={p.project_id ?? p.id} value={p.project_id ?? p.id}>
+                {p.project_name ?? p.name}
               </option>
             ))}
           </select>
         </div>
-
-        <div className="run-history__filter">
+        <div className="pick">
           <label htmlFor="history-status">Status:</label>
-          <select id="history-status" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
-            <option value={ALL}>{ALL}</option>
-            {RUN_STATUSES.map((status) => (
-              <option key={status} value={status}>{status}</option>
-            ))}
+          <select id="history-status" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value={ALL_STATUS}>{ALL_STATUS}</option>
+            {RUN_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
       </section>
 
-      <section className="run-history__card">
-        <p className="run-history__count">
-          Showing {filteredHistory.length} run{filteredHistory.length === 1 ? "" : "s"} for {selectedProjectName}
-        </p>
+      <section className="card">
+        <p className="count">Showing {shown.length} run{shown.length === 1 ? "" : "s"} for {projectName}</p>
+        <p className="hint">Select two completed runs to compare their results.</p>
 
-        {loadingHistory ? (
+        {loading ? (
           <p>Loading run history...</p>
-        ) : filteredHistory.length === 0 ? (
+        ) : shown.length === 0 ? (
           <p>No optimization runs found matching the selected filters.</p>
         ) : (
-          <div className="run-history__table-wrapper">
+          <div className="wrap">
             <table>
               <thead>
                 <tr>
+                  <th>Select</th>
                   <th>Date &amp; Time</th>
+                  {showProject && <th>Project</th>}
                   <th>Model</th>
                   <th>Status</th>
                   <th>Expected return</th>
@@ -136,32 +176,119 @@ export default function RunHistory() {
                 </tr>
               </thead>
               <tbody>
-                {filteredHistory.map((run) => (
-                  <tr key={run.run_id}>
-                    <td>{formatDateTime(run.created_at)}</td>
-                    <td>
-                      {run.model_name}
-                      <span className="run-history__muted"> · {run.objective_type}</span>
-                    </td>
-                    <td>
-                      <StatusBadge status={run.status} />
-                      {run.status === "Failed" && run.error_message && (
-                        <span className="run-history__reason">{run.error_message}</span>
-                      )}
-                    </td>
-                    <td>{run.status === "Completed" ? formatPercent(run.total_return) : "—"}</td>
-                    <td>
-                      <button type="button" className="run-history__view" onClick={() => navigate(`/dashboard/results/${run.run_id}`)}>
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {shown.map((run) => {
+                  const id = String(run.run_id);
+                  const selectable = run.status === "Completed";
+                  const selected = selectedIds.includes(id);
+                  return (
+                    <tr key={run.run_id} className={selected ? "selected-row" : ""}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select run ${id} for comparison`}
+                          checked={selected}
+                          disabled={!selectable || (selectedIds.length === 2 && !selected)}
+                          onChange={() => toggleSelection(id)}
+                        />
+                      </td>
+                      <td>{formatDateTime(run.created_at)}</td>
+                      {showProject && <td>{run.project_name}</td>}
+                      <td>{run.model_name}<span className="muted"> · {run.objective_type}</span></td>
+                      <td><StatusBadge status={run.status} /></td>
+                      <td>{selectable ? percent(run.total_return) : "—"}</td>
+                      <td>
+                        <button type="button" className="view" onClick={() => navigate(`/dashboard/results/${run.run_id}`)}>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
+
+        <div className="compare-actions">
+          <span>{selectedIds.length} of 2 runs selected</span>
+          <button type="button" className="compare-btn" disabled={selectedIds.length !== 2 || comparing} onClick={compareSelected}>
+            {comparing ? "Comparing..." : "Compare Selected Runs"}
+          </button>
+        </div>
+        {compareError && <div className="bad" role="alert">{compareError}</div>}
       </section>
+
+      {comparison && (
+        <section className="card comparison">
+          <div className="comparison-head">
+            <div>
+              <h2>Optimization Run Comparison</h2>
+              <p>Side-by-side results from the two selected runs.</p>
+            </div>
+            <button type="button" className="clear-btn" onClick={() => {
+              setComparison(null);
+              setSelectedIds([]);
+              setCompareError("");
+            }}>Clear Comparison</button>
+          </div>
+
+          <h3>Financial Summary</h3>
+          <div className="wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Run #{comparison[0].run.run_id}</th>
+                  <th>Run #{comparison[1].run.run_id}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Model</td><td>{comparison[0].run.model_name || "—"}</td><td>{comparison[1].run.model_name || "—"}</td></tr>
+                <tr><td>Objective</td><td>{comparison[0].run.objective_type || "—"}</td><td>{comparison[1].run.objective_type || "—"}</td></tr>
+                <tr><td>Budget</td><td>{money(comparison[0].run.total_budget)}</td><td>{money(comparison[1].run.total_budget)}</td></tr>
+                <tr><td>Objective value</td><td>{number(comparison[0].run.objective_value)}</td><td>{number(comparison[1].run.objective_value)}</td></tr>
+                <tr><td>Total allocated</td><td>{money(comparison[0].run.total_allocated)}</td><td>{money(comparison[1].run.total_allocated)}</td></tr>
+                <tr><td>Expected return</td><td>{percent(comparison[0].run.total_return)}</td><td>{percent(comparison[1].run.total_return)}</td></tr>
+                <tr><td>Portfolio risk</td><td>{number(comparison[0].run.total_risk)}</td><td>{number(comparison[1].run.total_risk)}</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Asset Allocation Comparison</h3>
+          {assetNames.length === 0 ? (
+            <p>No saved asset allocations were returned for these runs.</p>
+          ) : (
+            <div className="wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Run #{comparison[0].run.run_id}</th>
+                    <th>Run #{comparison[1].run.run_id}</th>
+                    <th>Difference (B − A)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assetNames.map((assetName) => {
+                    const amountA = allocationValue(allocationA, assetName, "allocation_amount");
+                    const amountB = allocationValue(allocationB, assetName, "allocation_amount");
+                    const pctA = allocationValue(allocationA, assetName, "allocation_percent");
+                    const pctB = allocationValue(allocationB, assetName, "allocation_percent");
+                    return (
+                      <tr key={assetName}>
+                        <td>{assetName}</td>
+                        <td>{money(amountA)} <span className="muted">· {percent(pctA)}</span></td>
+                        <td>{money(amountB)} <span className="muted">· {percent(pctB)}</span></td>
+                        <td>{amountA === null || amountB === null ? "—" : money(amountB - amountA)} <span className="muted">· {pctA === null || pctB === null ? "—" : percent(pctB - pctA)}</span></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
     </main>
   );
 }
