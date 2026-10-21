@@ -27,7 +27,7 @@ export async function getDashboardSummary(req, res) {
   );
 
   const statusRows = await query(
-    `SELECT o.status, COUNT(*) AS count FROM Optimization_Runs o
+    `SELECT o.status, COUNT(*) AS count FROM optimization_runs o
      JOIN Projects p ON p.project_id = o.project_id
      WHERE p.user_id = ? GROUP BY o.status`,
     [userId],
@@ -41,7 +41,7 @@ export async function getDashboardSummary(req, res) {
   const recentRuns = await query(
     `SELECT o.run_id, o.status, o.total_return, o.created_at, o.error_message,
             p.project_id, p.project_name, m.model_name, m.objective_type
-     FROM Optimization_Runs o
+     FROM optimization_runs o
      JOIN Projects p ON p.project_id = o.project_id
      JOIN Models m ON m.model_id = o.model_id
      WHERE p.user_id = ?
@@ -52,7 +52,7 @@ export async function getDashboardSummary(req, res) {
   const [latestCompleted] = await query(
     `SELECT o.run_id, o.total_return, o.total_allocated, o.completed_at,
             p.project_name, m.model_name, m.total_budget
-     FROM Optimization_Runs o
+     FROM optimization_runs o
      JOIN Projects p ON p.project_id = o.project_id
      JOIN Models m ON m.model_id = o.model_id
      WHERE p.user_id = ? AND o.status = 'Completed'

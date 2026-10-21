@@ -117,7 +117,7 @@ export async function createRun(projectId, modelId) {
   }
 
   const insert = await query(
-    "INSERT INTO Optimization_Runs (project_id, model_id, solver_name, status) VALUES (?, ?, 'HiGHS', 'Pending')",
+    "INSERT INTO optimization_runs (project_id, model_id, solver_name, status) VALUES (?, ?, 'HiGHS', 'Pending')",
     [projectId, modelId],
   );
   return insert.insertId;
@@ -137,7 +137,7 @@ export function startRun(runId, userId = null) {
 
 async function markFailed(runId, message, userId, solveMs = null) {
   await query(
-    "UPDATE Optimization_Runs SET status = 'Failed', error_message = ?, solve_duration_ms = ?, completed_at = NOW() WHERE run_id = ?",
+    "UPDATE optimization_runs SET status = 'Failed', error_message = ?, solve_duration_ms = ?, completed_at = NOW() WHERE run_id = ?",
     [message, solveMs, runId],
   );
   await logAction(userId, "RUN_FAILED", `Run #${runId}: ${message}`);
@@ -145,12 +145,12 @@ async function markFailed(runId, message, userId, solveMs = null) {
 
 export async function executeRun(runId, userId = null) {
   await query(
-    "UPDATE Optimization_Runs SET status = 'Running', started_at = NOW() WHERE run_id = ?",
+    "UPDATE optimization_runs SET status = 'Running', started_at = NOW() WHERE run_id = ?",
     [runId],
   );
 
   const [run] = await query(
-    "SELECT * FROM Optimization_Runs WHERE run_id = ?",
+    "SELECT * FROM optimization_runs WHERE run_id = ?",
     [runId],
   );
   const { model, assets, constraints } = await loadModelData(run.model_id);
@@ -248,7 +248,7 @@ export async function executeRun(runId, userId = null) {
     }
 
     await conn.execute(
-      `UPDATE Optimization_Runs
+      `UPDATE optimization_runs
        SET status = 'Completed', objective_value = ?, total_allocated = ?, total_return = ?,
            total_risk = ?, solve_duration_ms = ?, error_message = NULL, completed_at = NOW()
        WHERE run_id = ?`,
@@ -272,7 +272,7 @@ export async function executeRun(runId, userId = null) {
 // Runs left Pending/Running by a server restart can never finish, so mark them Failed.
 export async function failInterruptedRuns() {
   await query(
-    `UPDATE Optimization_Runs
+    `UPDATE optimization_runs
      SET status = 'Failed', error_message = 'Interrupted by a server restart. Please retry.', completed_at = NOW()
      WHERE status IN ('Pending', 'Running')`,
   );

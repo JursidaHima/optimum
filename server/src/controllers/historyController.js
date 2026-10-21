@@ -15,7 +15,7 @@ export async function getHistory(req, res) {
 
   const runs = await query(
     `SELECT ${RUN_COLUMNS}
-     FROM Optimization_Runs r
+     FROM optimization_runs r
      INNER JOIN Models m ON m.model_id = r.model_id
      INNER JOIN Projects p ON p.project_id = r.project_id
      WHERE r.project_id = ?
@@ -30,7 +30,7 @@ export async function getHistory(req, res) {
 export async function getAllHistory(req, res) {
   const runs = await query(
     `SELECT ${RUN_COLUMNS}
-     FROM Optimization_Runs r
+     FROM optimization_runs r
      INNER JOIN Models m ON m.model_id = r.model_id
      INNER JOIN Projects p ON p.project_id = r.project_id
      WHERE p.user_id = ?

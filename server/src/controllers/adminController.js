@@ -30,7 +30,7 @@ export async function getOverview(req, res) {
 
   const rows = await query(`
     SELECT status, COUNT(*) AS count
-    FROM Optimization_Runs
+    FROM optimization_runs
     GROUP BY status
   `);
 
@@ -52,7 +52,7 @@ export async function getOverview(req, res) {
       MAX(solve_duration_ms) AS max_ms,
       SUM(created_at >= NOW() - INTERVAL 24 HOUR) AS runs_24h,
       SUM(status = 'Failed' AND created_at >= NOW() - INTERVAL 24 HOUR) AS failed_24h
-    FROM Optimization_Runs
+    FROM optimization_runs
   `);
   const finished = runs.Completed + runs.Failed;
 
@@ -60,7 +60,7 @@ export async function getOverview(req, res) {
   const recentFailed = await query(`
     SELECT o.run_id, o.error_message, o.created_at,
            p.project_name, m.model_name, u.email
-    FROM Optimization_Runs o
+    FROM optimization_runs o
     JOIN Projects p ON p.project_id = o.project_id
     JOIN Models m ON m.model_id = o.model_id
     JOIN Users u ON u.user_id = p.user_id
@@ -138,7 +138,7 @@ export async function listUsers(req, res) {
   const users = await query(
     `SELECT u.user_id, u.name, u.surname, u.email, u.status, u.created_at, r.role_name,
         (SELECT COUNT(*) FROM Projects p WHERE p.user_id = u.user_id) AS project_count,
-        (SELECT COUNT(*) FROM Optimization_Runs o JOIN Projects p ON p.project_id = o.project_id
+        (SELECT COUNT(*) FROM optimization_runs o JOIN Projects p ON p.project_id = o.project_id
            WHERE p.user_id = u.user_id) AS run_count,
         (SELECT MAX(s.created_at) FROM Sessions s WHERE s.user_id = u.user_id) AS last_login
      FROM Users u JOIN Roles r ON r.role_id = u.role_id
@@ -160,7 +160,7 @@ export async function getUser(req, res) {
   );
   const runs = await query(
     `SELECT o.run_id, o.status, o.created_at, p.project_name, m.model_name
-     FROM Optimization_Runs o
+     FROM optimization_runs o
      JOIN Projects p ON p.project_id = o.project_id
      JOIN Models m ON m.model_id = o.model_id
      WHERE p.user_id = ? ORDER BY o.created_at DESC LIMIT 10`,
@@ -432,7 +432,7 @@ export async function listJobs(req, res) {
     `SELECT o.run_id, o.status, o.solver_name, o.error_message, o.created_at, o.started_at, o.completed_at,
         o.solve_duration_ms AS duration_ms,
         p.project_name, m.model_name, u.user_id, u.email
-     FROM Optimization_Runs o
+     FROM optimization_runs o
      JOIN Projects p ON p.project_id = o.project_id
      JOIN Models m ON m.model_id = o.model_id
      JOIN Users u ON u.user_id = p.user_id
@@ -442,7 +442,7 @@ export async function listJobs(req, res) {
   );
 
   const counts = await query(
-    "SELECT status, COUNT(*) AS count FROM Optimization_Runs GROUP BY status",
+    "SELECT status, COUNT(*) AS count FROM optimization_runs GROUP BY status",
   );
   const summary = Object.fromEntries(RUN_STATUSES.map((s) => [s, 0]));
   for (const row of counts) summary[row.status] = Number(row.count);
@@ -453,7 +453,7 @@ export async function listJobs(req, res) {
        MAX(solve_duration_ms) AS max_ms,
        SUM(created_at >= NOW() - INTERVAL 24 HOUR) AS runs_24h,
        SUM(status = 'Failed' AND created_at >= NOW() - INTERVAL 24 HOUR) AS failed_24h
-     FROM Optimization_Runs`,
+     FROM optimization_runs`,
   );
   const finished = summary.Completed + summary.Failed;
 
@@ -476,7 +476,7 @@ export async function listJobs(req, res) {
 // POST /api/admin/jobs/:runId/retry  – re-submits the same model as a new run
 export async function retryJob(req, res) {
   const [run] = await query(
-    "SELECT run_id, project_id, model_id, status FROM Optimization_Runs WHERE run_id = ?",
+    "SELECT run_id, project_id, model_id, status FROM optimization_runs WHERE run_id = ?",
     [req.params.runId],
   );
   if (!run) throw new ApiError(404, MESSAGES.notFound);
