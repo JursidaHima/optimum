@@ -5,7 +5,7 @@
   min-height: 100vh;
 }
 
-.app-sidebar {
+.app-shell .sidebar {
   background: #12263f;
   color: #fff;
   padding: 1.5rem;
@@ -14,7 +14,7 @@
   justify-content: flex-start; /* logo + nav stay together at the top */
 }
 
-.app-sidebar .logo {
+.app-shell .sidebar .logo {
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: 0.01em;
@@ -24,13 +24,13 @@
   display: block;
 }
 
-.app-sidebar__nav {
+.app-shell .sidebar .nav {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.app-sidebar__link {
+.app-shell .sidebar .link {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   padding: 0.5rem 0.75rem;
@@ -38,30 +38,30 @@
   transition: background 0.2s;
 }
 
-.app-sidebar__link:hover,
-.app-sidebar__link.active {
+.app-shell .sidebar .link:hover,
+.app-shell .sidebar .link.active {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
 /* Log out: teal on hover instead of the default white ghost hover */
-.app-sidebar__foot .btn--ghost {
+.app-shell .sidebar .foot .btn.ghost {
   transition: background 0.2s, border-color 0.2s;
 }
 
-.app-sidebar__foot .btn--ghost:hover {
+.app-shell .sidebar .foot .btn.ghost:hover {
   background: #0f766e;
   border-color: #0f766e;
   color: #fff;
 }
 
-.app-sidebar__foot {
+.app-shell .sidebar .foot {
   margin-top: auto; /* pushes the user info + Log out to the bottom */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1rem;
 }
 
-.app-content {
+.app-shell .content {
   padding: 2rem 2.5rem;
   background: #f8f9fa;
   overflow-y: auto;
@@ -75,13 +75,13 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.app-sidebar__section {
+.app-shell .sidebar .section {
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.app-sidebar__section-title {
+.app-shell .sidebar .section-title {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -89,14 +89,80 @@
   margin-bottom: 0.5rem;
 }
 
-.app-sidebar__email {
+.app-shell .sidebar .email {
   opacity: 0.7;
 }
 
-.app-sidebar__role {
+.app-shell .sidebar .role {
   margin: -1.5rem 0 1.5rem;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #5eead4;
+}
+
+/* Phones (600px and below) */
+@media (max-width: 600px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .app-shell .sidebar {
+    padding: 1rem;
+  }
+
+  .app-shell .sidebar .logo {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .app-shell .sidebar .role {
+    margin: -0.5rem 0 0.75rem;
+  }
+
+  .app-shell .sidebar .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .app-shell .sidebar .link {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  .app-shell .sidebar .section {
+    flex-basis: 100%;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .app-shell .sidebar .foot {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .app-shell .sidebar .foot p {
+    margin: 0;
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+
+  .app-shell .sidebar .foot .btn.block {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .app-shell .content {
+    padding: 1rem;
+  }
+
+  .panel {
+    padding: 1rem;
+  }
 }

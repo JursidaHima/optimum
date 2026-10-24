@@ -13,7 +13,6 @@
   box-sizing: border-box;
 }
 
-
 .home .layout {
   width: 100%;
   max-width: none;
@@ -307,8 +306,8 @@
    PHONE RESPONSIVE - 600PX
     */
 
+/* Phones (600px and below) */
 @media (max-width: 600px) {
-
   /* Full-width layout */
 
   .home .layout {

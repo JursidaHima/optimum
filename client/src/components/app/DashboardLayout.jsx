@@ -6,21 +6,21 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const params = useParams();
   const projectId = params.projectId;
-  const linkClass = ({ isActive }) => `app-sidebar__link${isActive ? " active" : ""}`; // Still available if you need it for nested project views
+  const linkClass = ({ isActive }) => `link${isActive ? " active" : ""}`; // Still available if you need it for nested project views
 
   return (
     <div className="app-shell">
-      <aside className="app-sidebar">
+      <aside className="sidebar">
         <Link to="/" className="logo">Optimum</Link>
         
-        <nav className="app-sidebar__nav">
+        <nav className="nav">
           <NavLink to="/dashboard" end className={linkClass}>Dashboard</NavLink>
           <NavLink to="/dashboard/projects" className={linkClass}>Projects</NavLink>
           <NavLink to="/dashboard/model-builder" className={linkClass}>Model Builder</NavLink>
           <NavLink to="/dashboard/data-upload" className={linkClass}>Data Upload</NavLink>
 
           {user?.role === "Admin" && (
-            <Link to="/admin" className="app-sidebar__link">Admin area</Link>
+            <Link to="/admin" className="link">Admin area</Link>
           )}
 
           {/* Standalone Global Pages */}
@@ -33,29 +33,29 @@ export default function DashboardLayout() {
 
           {/* Conditionally show other project-specific links only when viewing a project */}
           {projectId && (
-            <div className="app-sidebar__section">
-              <div className="app-sidebar__section-title">
+            <div className="section">
+              <div className="section-title">
                 Active Project Actions
               </div>
-              <Link to={`/dashboard/projects/${projectId}/model`} className="app-sidebar__link">
+              <Link to={`/dashboard/projects/${projectId}/model`} className="link">
                 Model Setup
               </Link>
             </div>
           )}
         </nav>
 
-        <div className="app-sidebar__foot">
+        <div className="foot">
           <p>
             {user?.name} {user?.surname}<br />
-            <span className="app-sidebar__email">{user?.email}</span>
+            <span className="email">{user?.email}</span>
           </p>
-          <button type="button" className="btn btn--ghost btn--sm btn--block" onClick={logout}>
+          <button type="button" className="btn ghost small block" onClick={logout}>
             Log out
           </button>
         </div>
       </aside>
       
-      <main className="app-content">
+      <main className="content">
         <Outlet />
       </main>
     </div>

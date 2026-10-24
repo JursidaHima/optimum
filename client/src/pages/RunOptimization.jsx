@@ -137,24 +137,24 @@ export default function RunOptimization() {
 
   return (
     <main className="optimization">
-      <header className="optimization__header">
+      <header className="header">
         <div>
           <h1>Run Optimization</h1>
           <p>Select a project, choose one of its models, and solve it with the HiGHS optimization solver.</p>
         </div>
       </header>
 
-      {error && <div className="optimization__error" role="alert">{error}</div>}
+      {error && <div className="error" role="alert">{error}</div>}
 
-      <section className="optimization__card optimization__card--spaced">
+      <section className="card spaced">
         <h2>Select Project</h2>
-        <div className="optimization__field">
-          <label htmlFor="run-project" className="optimization__label">Project</label>
+        <div className="group">
+          <label htmlFor="run-project" className="label">Project</label>
           <select
             id="run-project"
             value={selectedProjectId}
             onChange={(e) => selectProject(e.target.value)}
-            className="optimization__select optimization__select--full"
+            className="select full"
             disabled={running}
           >
             <option value="">-- Choose a project --</option>
@@ -170,17 +170,17 @@ export default function RunOptimization() {
       {selectedProjectId && (
         <>
           {loadingModel ? (
-            <div className="optimization__card">Loading model details...</div>
+            <div className="card">Loading model details...</div>
           ) : !model ? (
-            <section className="optimization__card">
+            <section className="card">
               <h2>No model found</h2>
               <p>This project does not have a saved financial model yet.</p>
-              <button type="button" className="btn btn--primary" onClick={() => navigate("/dashboard/model-builder")}>
+              <button type="button" className="btn primary" onClick={() => navigate("/dashboard/model-builder")}>
                 Go to Model Builder
               </button>
             </section>
           ) : (
-            <section className="optimization__card">
+            <section className="card">
               <h2>Choose a model</h2>
               <p>{models.length} model{models.length === 1 ? "" : "s"} in this project. Pick the one to run.</p>
 
@@ -213,24 +213,24 @@ export default function RunOptimization() {
                 })}
               </ul>
 
-              <button type="button" className="btn btn--primary" disabled={running} onClick={handleRun}>
+              <button type="button" className="btn primary" disabled={running} onClick={handleRun}>
                 {running ? "Running Optimization..." : `Run "${model?.model_name}"`}
               </button>
 
               {run && (
-                <div className="optimization__run" role="status" aria-live="polite">
+                <div className="run" role="status" aria-live="polite">
                   <h3>Run #{run.runId}</h3>
                   <RunStatusSteps status={run.status} />
 
                   {run.status === "Failed" && (
-                    <div className="optimization__error">
+                    <div className="error">
                       <strong>Optimization failed.</strong>
                       <p>{run.errorMessage || "The solver could not produce a solution."}</p>
-                      <div className="optimization__actions">
-                        <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/model-builder")}>
+                      <div className="actions">
+                        <button type="button" className="btn primary small" onClick={() => navigate("/dashboard/model-builder")}>
                           Edit Model
                         </button>
-                        <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate(`/dashboard/results/${run.runId}`)}>
+                        <button type="button" className="btn primary small" onClick={() => navigate(`/dashboard/results/${run.runId}`)}>
                           View run details
                         </button>
                       </div>

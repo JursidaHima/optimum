@@ -47,11 +47,11 @@ export default function Projects() {
     <section>
       <div className="page-head">
         <div><h1>Your Projects</h1></div>
-        <button type="button" className="btn btn--primary" onClick={openNew}>+ New Project</button>
+        <button type="button" className="btn primary" onClick={openNew}>+ New Project</button>
       </div>
 
-      {notice && <p className="alert alert--success" role="status">{notice}</p>}
-      {error && <p className="alert alert--error" role="alert">{error}</p>}
+      {notice && <p className="alert success" role="status">{notice}</p>}
+      {error && <p className="alert error" role="alert">{error}</p>}
 
       {editing && (
         <div className="panel">
@@ -64,8 +64,8 @@ export default function Projects() {
               {(p) => <input {...p} type="text" value={description} onChange={(e) => setDescription(e.target.value)} />}
             </FormField>
             <div className="form-actions">
-              <button type="submit" className="btn btn--primary" disabled={busy}>Save</button>
-              <button type="button" className="btn btn--ghost" onClick={() => setEditing(null)}>Cancel</button>
+              <button type="submit" className="btn primary" disabled={busy}>Save</button>
+              <button type="button" className="btn ghost" onClick={() => setEditing(null)}>Cancel</button>
             </div>
           </form>
         </div>
@@ -81,10 +81,10 @@ export default function Projects() {
             <li key={p.project_id} className="entity-card">
               <h3>{p.project_name}</h3>
               <p>{p.description || "No description."} · {p.model_count} model{p.model_count === 1 ? "" : "s"}</p>
-              <div className="entity-card__actions">
-               <Link to="/dashboard/model-builder" className="btn btn--primary btn--sm">  Open</Link>
-                <button type="button" className="btn btn--ghost btn--sm" onClick={() => openEdit(p)}>Edit</button>
-                <button type="button" className="btn btn--ghost btn--sm" onClick={() => onDelete(p)}>Delete</button>
+              <div className="actions">
+               <Link to="/dashboard/model-builder" className="btn primary small">  Open</Link>
+                <button type="button" className="btn ghost small" onClick={() => openEdit(p)}>Edit</button>
+                <button type="button" className="btn ghost small" onClick={() => onDelete(p)}>Delete</button>
               </div>
             </li>
           ))}

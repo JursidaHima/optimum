@@ -61,10 +61,10 @@ export default function OptimizationResults({ admin = false }) {
   if (error) {
     return (
       <main className="optimization-results">
-        <div className="optimization-results__error" role="alert">
+        <div className="error" role="alert">
           <h2>Unable to load optimization results</h2>
           <p>{error}</p>
-          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate(backPath)}>
+          <button type="button" className="btn primary small" onClick={() => navigate(backPath)}>
             {backLabel}
           </button>
         </div>
@@ -75,7 +75,7 @@ export default function OptimizationResults({ admin = false }) {
   if (!data) {
     return (
       <main className="optimization-results">
-        <div className="optimization-results__card"><p>Loading results…</p></div>
+        <div className="card"><p>Loading results…</p></div>
       </main>
     );
   }
@@ -98,34 +98,34 @@ export default function OptimizationResults({ admin = false }) {
 
   return (
     <main className="optimization-results">
-      <header className="optimization-results__header">
+      <header className="header">
         <div>
           <h1>Optimization Results</h1>
           <p>{headerLine}</p>
-          <p className="optimization-results__sub">
+          <p className="sub">
             {run.model_name} · {run.objective_type} · Budget {formatMoney(budget)} · Solver {run.solver_name}
           </p>
         </div>
         <StatusBadge status={status} />
       </header>
 
-      <section className="optimization-results__card">
+      <section className="card">
         <RunStatusSteps status={status} />
       </section>
 
       {!finished && (
-        <section className="optimization-results__card" role="status">
+        <section className="card" role="status">
           <h2>{status === "Pending" ? "Waiting to start…" : "Solving…"}</h2>
           <p>The HiGHS solver is working on your model. Results will appear here as soon as the run completes.</p>
         </section>
       )}
 
       {failed && (
-        <section className="optimization-results__error" role="alert">
+        <section className="error" role="alert">
           <h2>Optimization failed</h2>
           <p>{run.error_message || "The solver could not produce a solution."}</p>
           {!admin && (
-            <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate("/dashboard/model-builder")}>
+            <button type="button" className="btn primary small" onClick={() => navigate("/dashboard/model-builder")}>
               Edit Model
             </button>
           )}
@@ -134,34 +134,34 @@ export default function OptimizationResults({ admin = false }) {
 
       {completed && (
         <>
-          <section className="optimization-results__kpis">
-            <div className="optimization-results__kpi">
+          <section className="kpis">
+            <div className="kpi">
               <span>Expected return</span>
               <strong>{formatPercent(run.total_return)}</strong>
             </div>
-            <div className="optimization-results__kpi">
+            <div className="kpi">
               <span>Budget used</span>
               <strong>{formatMoney(run.total_allocated)}</strong>
               <small>of {formatMoney(budget)}</small>
             </div>
-            <div className="optimization-results__kpi">
+            <div className="kpi">
               <span>Portfolio risk score</span>
               <strong>{formatNumber(run.total_risk)}</strong>
             </div>
-            <div className="optimization-results__kpi">
+            <div className="kpi">
               <span>Solve time</span>
               <strong>{formatDuration(run.solve_duration_ms)}</strong>
             </div>
           </section>
 
-          <section className="optimization-results__grid">
-            <div className="optimization-results__card">
+          <section className="grid">
+            <div className="card">
               <h2>Allocation</h2>
               {chartData.length === 0 ? (
                 <p>The solver allocated nothing to any asset.</p>
               ) : (
                 <>
-                  <div className="optimization-results__chart">
+                  <div className="chart">
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
                         <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={2}>
@@ -173,11 +173,11 @@ export default function OptimizationResults({ admin = false }) {
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
-                  <ul className="optimization-results__legend">
+                  <ul className="legend">
                     {chartData.map((entry, index) => (
                       <li key={entry.name}>
                         <span
-                          className={`optimization-results__swatch optimization-results__swatch--${index % CHART_COLORS.length}`}
+                          className={`swatch color${index % CHART_COLORS.length}`}
                           aria-hidden="true"
                         />
                         {entry.name} — {entry.value.toFixed(2)}%
@@ -188,23 +188,23 @@ export default function OptimizationResults({ admin = false }) {
               )}
             </div>
 
-            <div className="optimization-results__card">
+            <div className="card">
               <h2>Constraint checklist</h2>
               {violated.length > 0 && (
-                <p className="optimization-results__warn" role="alert">
+                <p className="warn" role="alert">
                   {violated.length} constraint{violated.length === 1 ? "" : "s"} not satisfied.
                 </p>
               )}
               {constraints.length === 0 ? (
                 <p>This model has no extra constraints. The budget and each asset's allocation limits were enforced.</p>
               ) : (
-                <ul className="optimization-results__constraints">
+                <ul className="constraints">
                   {constraints.map((c) => (
                     <li
                       key={c.id}
-                      className={`optimization-results__constraint optimization-results__constraint--${c.satisfied ? "ok" : "bad"}`}
+                      className={`constraint ${c.satisfied ? "ok" : "bad"}`}
                     >
-                      <span className="optimization-results__constraint-icon" aria-hidden="true">{c.satisfied ? "✓" : "✕"}</span>
+                      <span className="constraint-icon" aria-hidden="true">{c.satisfied ? "✓" : "✕"}</span>
                       <div>
                         <strong>{c.label}</strong>
                         <p>
@@ -219,12 +219,12 @@ export default function OptimizationResults({ admin = false }) {
             </div>
           </section>
 
-          <section className="optimization-results__card">
+          <section className="card">
             <h2>Recommended allocation</h2>
             {allocations.length === 0 ? (
               <p>No allocation rows were saved for this run.</p>
             ) : (
-              <div className="optimization-results__table-wrapper">
+              <div className="table-wrapper">
                 <table>
                   <thead>
                     <tr>
@@ -262,12 +262,12 @@ export default function OptimizationResults({ admin = false }) {
         </>
       )}
 
-      <footer className="optimization-results__actions">
-        <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate(backPath)}>
+      <footer className="actions">
+        <button type="button" className="btn primary small" onClick={() => navigate(backPath)}>
           {backLabel}
         </button>
         {completed && (
-          <button type="button" className="btn btn--primary btn--sm" onClick={() => window.print()}>
+          <button type="button" className="btn primary small" onClick={() => window.print()}>
             Download Report
           </button>
         )}

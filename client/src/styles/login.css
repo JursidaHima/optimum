@@ -1,0 +1,109 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Full screen wrapper to center everything vertically and horizontally */
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+  font-family: Arial, sans-serif;
+}
+
+/* Main content box */
+.card {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 350px;
+}
+
+.card h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333333;
+}
+
+/* Error message styling */
+.error-box {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Standard input styling inside FormField */
+.card input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Button styling */
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.submit-btn:disabled {
+  background-color: #a0c7ff;
+  cursor: not-allowed;
+}
+
+/* Footer text link */
+.bottom-text {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.bottom-text a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.bottom-text a:hover {
+  text-decoration: underline;
+}
+
+/* Phones (600px and below) */
+@media (max-width: 600px) {
+  .wrapper {
+    align-items: flex-start;
+    padding: 1.5rem 1rem;
+  }
+
+  .card {
+    max-width: none;
+    padding: 24px 20px;
+  }
+
+  /* 16px stops iOS from zooming in when a field is focused */
+  .card input {
+    font-size: 16px;
+  }
+}

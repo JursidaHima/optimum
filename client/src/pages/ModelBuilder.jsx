@@ -322,7 +322,7 @@ export default function ModelBuilder() {
 
   return (
     <main className="model-builder">
-      <div className="model-builder__header">
+      <div className="header">
         <div>
           <h1>Model Builder</h1>
           <p>
@@ -333,24 +333,24 @@ export default function ModelBuilder() {
       </div>
 
       {error && (
-        <div className="model-builder__message model-builder__message--error">
+        <div className="message error">
           {error}
         </div>
       )}
 
       {message && (
-        <div className="model-builder__message model-builder__message--success">
+        <div className="message success">
           {message}
         </div>
       )}
 
       <form
-        className="model-builder__form"
+        className="form"
         onSubmit={handleSubmit}
       >
         {/* PROJECT */}
-        <section className="model-builder__section">
-          <div className="model-builder__section-header">
+        <section className="section">
+          <div className="section-header">
             <div>
               <h2>Project</h2>
               <p>
@@ -408,8 +408,8 @@ export default function ModelBuilder() {
         </section>
 
         {/* MODEL INFORMATION */}
-        <section className="model-builder__section">
-          <div className="model-builder__section-header">
+        <section className="section">
+          <div className="section-header">
             <div>
               <h2>Model Information</h2>
               <p>
@@ -419,7 +419,7 @@ export default function ModelBuilder() {
             </div>
           </div>
 
-          <div className="model-builder__grid">
+          <div className="grid">
             <div className="form-group">
               <label htmlFor="modelName">Model Name</label>
               <input
@@ -473,8 +473,8 @@ export default function ModelBuilder() {
         </section>
 
         {/* ASSETS */}
-        <section className="model-builder__section">
-          <div className="model-builder__section-header">
+        <section className="section">
+          <div className="section-header">
             <div>
               <h2>Assets</h2>
               <p>
@@ -485,26 +485,26 @@ export default function ModelBuilder() {
 
             <button
               type="button"
-              className="btn btn--secondary"
+              className="btn secondary"
               onClick={addAsset}
             >
               + Add Asset
             </button>
           </div>
 
-          <div className="model-builder__assets">
+          <div className="assets">
             {assets.map((asset, index) => (
               <div
-                className="model-builder__asset"
+                className="asset"
                 key={index}
               >
-                <div className="model-builder__asset-header">
+                <div className="asset-header">
                   <h3>Asset {index + 1}</h3>
 
                   {assets.length > 1 && (
                     <button
                       type="button"
-                      className="model-builder__remove"
+                      className="remove"
                       onClick={() =>
                         removeAsset(index)
                       }
@@ -514,7 +514,7 @@ export default function ModelBuilder() {
                   )}
                 </div>
 
-                <div className="model-builder__grid">
+                <div className="grid">
                   <div className="form-group">
                     <label>Asset Name</label>
                     <input
@@ -606,8 +606,8 @@ export default function ModelBuilder() {
         </section>
 
         {/* CONSTRAINTS */}
-        <section className="model-builder__section">
-          <div className="model-builder__section-header">
+        <section className="section">
+          <div className="section-header">
             <div>
               <h2>Constraints</h2>
               <p>
@@ -618,7 +618,7 @@ export default function ModelBuilder() {
 
             <button
               type="button"
-              className="btn btn--secondary"
+              className="btn secondary"
               onClick={addConstraint}
             >
               + Add Constraint
@@ -626,14 +626,14 @@ export default function ModelBuilder() {
           </div>
 
           {constraints.length === 0 ? (
-            <div className="model-builder__empty">
+            <div className="empty">
               No constraints added yet.
             </div>
           ) : (
-            <div className="model-builder__constraints">
+            <div className="constraints">
               {constraints.map((constraint, index) => (
                 <div
-                  className="model-builder__constraint"
+                  className="constraint"
                   key={index}
                 >
                   <div className="form-group">
@@ -693,7 +693,7 @@ export default function ModelBuilder() {
 
                   <button
                     type="button"
-                    className="model-builder__remove"
+                    className="remove"
                     onClick={() => removeConstraint(index)}
                   >
                     Remove
@@ -705,7 +705,7 @@ export default function ModelBuilder() {
         </section>
 
         {/* SAVE & ACTIONS */}
-        <div className="model-builder__actions">
+        <div className="actions">
           <button type="submit" disabled={saving}>
             {saving ? "Saving..." : modelId ? "Update Model" : "Save Model"}
           </button>

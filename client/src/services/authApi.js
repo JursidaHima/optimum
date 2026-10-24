@@ -30,7 +30,7 @@ export const authApi = {
   register: (userData) => request("/auth/register", userData),
 
   login: (email, password) => request("/auth/login", { email, password }),
-   forgotPassword: (email) => request("/auth/forgot-password", { email }),
+  forgotPassword: (email) => request("/auth/forgot-password", { email }),
 
   resetPassword: (token, password) =>
     request("/auth/reset-password", { token, password }),

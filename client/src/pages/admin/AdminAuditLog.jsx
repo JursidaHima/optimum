@@ -12,21 +12,21 @@ export default function AdminAuditLog() {
 
   return (
     <section className="admin">
-      <header className="admin__header">
+      <header className="header">
         <h1>Audit Log</h1>
         <p>Who did what and when: logins, admin actions and run results .</p>
       </header>
 
-      {error && <p className="alert alert--error" role="alert">{error}</p>}
+      {error && <p className="alert error" role="alert">{error}</p>}
 
-      <div className="admin__card">
+      <div className="card">
         {!logs ? (
           <p>Loading…</p>
         ) : logs.length === 0 ? (
-          <p className="admin__muted">Nothing recorded yet.</p>
+          <p className="muted">Nothing recorded yet.</p>
         ) : (
-          <div className="admin__table-wrap">
-            <table className="admin__table">
+          <div className="table-wrap">
+            <table className="table">
               <thead><tr><th>When</th><th>User</th><th>Action</th><th>Details</th></tr></thead>
               <tbody>
                 {logs.map((log) => (

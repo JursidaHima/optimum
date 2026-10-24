@@ -6,27 +6,26 @@
   margin: 0;
 }
 
-
-.model-builder__header {
+.model-builder .header {
   margin-bottom: 2rem;
 }
 
-.model-builder__header h1 {
+.model-builder .header h1 {
   margin-bottom: 0.5rem;
 }
 
-.model-builder__header p {
+.model-builder .header p {
   color: #5c584c;
   max-width: 720px;
   margin: 0;
 }
 
 /*  Form layout & section cards  */
-.model-builder__form {
+.model-builder .form {
   display: block;
 }
 
-.model-builder__section {
+.model-builder .section {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -34,7 +33,7 @@
   margin-bottom: 1.5rem;
 }
 
-.model-builder__section-header {
+.model-builder .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,17 +41,17 @@
   margin-bottom: 1.25rem;
 }
 
-.model-builder__section-header h2 {
+.model-builder .section-header h2 {
   margin-bottom: 0.35rem;
 }
 
-.model-builder__section-header p {
+.model-builder .section-header p {
   margin: 0;
   color: #64748b;
 }
 
 /*  Messages  */
-.model-builder__message {
+.model-builder .message {
   padding: 0.8rem 1rem;
   border-radius: 10px;
   margin-bottom: 1.5rem;
@@ -60,18 +59,18 @@
   font-weight: 500;
 }
 
-.model-builder__message--error {
+.model-builder .message.error {
   background: #fbeaea;
   color: #9b1c1c;
 }
 
-.model-builder__message--success {
+.model-builder .message.success {
   background: #e3f5ea;
   color: #147a52;
 }
 
 /*  Fields  */
-.model-builder__grid {
+.model-builder .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
@@ -119,45 +118,45 @@
 }
 
 /* The project dropdown mirrors the Data Upload select */
-.model-builder__section > .form-group {
+.model-builder .section > .form-group {
   max-width: 520px;
 }
 
 /*  Assets  */
-.model-builder__assets {
+.model-builder .assets {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.model-builder__asset {
+.model-builder .asset {
   background: #f8fafc;
   border: 1px solid #e4e0d8;
   border-radius: 10px;
   padding: 1.25rem;
 }
 
-.model-builder__asset-header {
+.model-builder .asset-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.model-builder__asset-header h3 {
+.model-builder .asset-header h3 {
   margin: 0;
   font-size: 1rem;
   color: #12263f;
 }
 
 /*  Constraints  */
-.model-builder__constraints {
+.model-builder .constraints {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.model-builder__constraint {
+.model-builder .constraint {
   display: grid;
   grid-template-columns: 2fr 1.5fr 1fr auto;
   gap: 1rem;
@@ -168,7 +167,7 @@
   padding: 1.25rem;
 }
 
-.model-builder__empty {
+.model-builder .empty {
   border: 2px dashed #cbd5e1;
   border-radius: 12px;
   padding: 1.5rem;
@@ -178,7 +177,7 @@
 }
 
 /*  Buttons  */
-.model-builder .btn--secondary {
+.model-builder .btn.secondary {
   background: #fff;
   color: #12263f;
   border: 1.5px solid #12263f;
@@ -190,13 +189,13 @@
   cursor: pointer;
 }
 
-.model-builder .btn--secondary:hover {
+.model-builder .btn.secondary:hover {
   background: #12263f;
   color: #fff;
 }
 
 /* Text-style danger button, same look as the admin "Delete" links */
-.model-builder__remove {
+.model-builder .remove {
   background: none;
   border: 0;
   padding: 0.4rem 0.2rem;
@@ -209,19 +208,19 @@
   white-space: nowrap;
 }
 
-.model-builder__remove:hover {
+.model-builder .remove:hover {
   color: #9b1c1c;
 }
 
-/* Save Model — same pill style as .btn--primary */
-.model-builder__actions {
+/* Save Model — same pill style as .btn.primary */
+.model-builder .actions {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
   padding-bottom: 1rem;
 }
 
-.model-builder__actions button {
+.model-builder .actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -236,33 +235,37 @@
   cursor: pointer;
 }
 
-.model-builder__actions button:hover {
+.model-builder .actions button:hover {
   background: #0f172a;
 }
 
-.model-builder__actions button:disabled {
+.model-builder .actions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 /*  Responsive  */
-@media (max-width: 900px) {
-  .model-builder__constraint {
-    grid-template-columns: 1fr 1fr;
-  }
-}
 
-@media (max-width: 700px) {
-  .model-builder__section-header {
+/* Phones (600px and below) */
+@media (max-width: 600px) {
+  .model-builder .section-header {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .model-builder__constraint {
+  .model-builder .constraint {
     grid-template-columns: 1fr;
   }
 
-  .model-builder__section > .form-group {
+  .model-builder .section > .form-group {
     max-width: none;
+  }
+
+  .model-builder .section {
+    padding: 1rem;
+  }
+
+  .model-builder .header {
+    margin-bottom: 1.25rem;
   }
 }

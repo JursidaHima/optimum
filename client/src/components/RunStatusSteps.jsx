@@ -32,13 +32,13 @@ export default function RunStatusSteps({ status }) {
         return (
           <li
             key={step}
-            className={`status-steps__item status-steps__item--${state}`}
+            className={`item ${state}`}
             aria-current={isCurrent ? "step" : undefined}
           >
-            <span className="status-steps__dot" aria-hidden="true">
+            <span className="dot" aria-hidden="true">
               {state === "done" ? "✓" : state === "failed" ? "✕" : index + 1}
             </span>
-            <span className="status-steps__label">{step}</span>
+            <span className="label">{step}</span>
           </li>
         );
       })}

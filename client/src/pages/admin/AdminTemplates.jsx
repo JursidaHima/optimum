@@ -473,7 +473,7 @@ export default function AdminTemplates() {
 
       {/* Header */}
 
-      <header className="admin__header admin__header--row">
+      <header className="header row">
         <div>
           <h1>Templates</h1>
 
@@ -485,7 +485,7 @@ export default function AdminTemplates() {
 
         <button
           type="button"
-          className="btn btn--primary"
+          className="btn primary"
           onClick={openNew}
           disabled={busy}
         >
@@ -497,7 +497,7 @@ export default function AdminTemplates() {
 
       {notice && (
         <p
-          className="alert alert--success"
+          className="alert success"
           role="status"
         >
           {notice}
@@ -508,7 +508,7 @@ export default function AdminTemplates() {
 
       {error && (
         <p
-          className="alert alert--error"
+          className="alert error"
           role="alert"
         >
           {error}
@@ -519,7 +519,7 @@ export default function AdminTemplates() {
 
       {editing && (
         <form
-          className="admin__card"
+          className="card"
           onSubmit={onSubmit}
           noValidate
         >
@@ -529,7 +529,7 @@ export default function AdminTemplates() {
               : "Edit template"}
           </h2>
 
-          <p className="admin__muted">
+          <p className="muted">
             Configure a reusable finance model using
             the same inputs as the Model Builder.
           </p>
@@ -538,7 +538,7 @@ export default function AdminTemplates() {
 
           {formError && (
             <p
-              className="alert alert--error"
+              className="alert error"
               role="alert"
             >
               {formError}
@@ -593,7 +593,7 @@ export default function AdminTemplates() {
             {(props) => (
               <textarea
                 {...props}
-                className="admin__code"
+                className="code"
                 rows={18}
                 spellCheck={false}
                 required
@@ -610,10 +610,10 @@ export default function AdminTemplates() {
 
           {/* Form actions */}
 
-          <div className="admin__actions">
+          <div className="actions">
             <button
               type="submit"
-              className="btn btn--primary"
+              className="btn primary"
               disabled={busy}
             >
               {busy
@@ -625,7 +625,7 @@ export default function AdminTemplates() {
 
             <button
               type="button"
-              className="btn btn--ghost btn--dark"
+              className="btn ghost dark"
               onClick={onFormatJson}
               disabled={busy}
             >
@@ -634,7 +634,7 @@ export default function AdminTemplates() {
 
             <button
               type="button"
-              className="btn btn--ghost btn--dark"
+              className="btn ghost dark"
               onClick={onCancel}
               disabled={busy}
             >
@@ -649,31 +649,31 @@ export default function AdminTemplates() {
       {templates === null ? (
         <p>Loading…</p>
       ) : templates.length === 0 ? (
-        <div className="admin__card">
-          <p className="admin__muted">
+        <div className="card">
+          <p className="muted">
             No templates yet. Create the first one.
           </p>
         </div>
       ) : (
-        <ul className="admin__grid">
+        <ul className="grid">
           {templates.map((template) => (
             <li
               key={template.template_id}
-              className="admin__card"
+              className="card"
             >
               <h3>{template.template_name}</h3>
 
               <p>{template.description}</p>
 
-              <p className="admin__muted">
+              <p className="muted">
                 {getAssetCount(template)} assets · created{" "}
                 {formatDateTime(template.created_at)}
               </p>
 
-              <div className="admin__actions">
+              <div className="actions">
                 <button
                   type="button"
-                  className="btn btn--primary btn--sm"
+                  className="btn primary small"
                   onClick={() => openEdit(template)}
                   disabled={busy}
                 >
@@ -682,7 +682,7 @@ export default function AdminTemplates() {
 
                 <button
                   type="button"
-                  className="btn btn--ghost btn--sm btn--dark"
+                  className="btn ghost small dark"
                   onClick={() => onDelete(template)}
                   disabled={busy}
                 >

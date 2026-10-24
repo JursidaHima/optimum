@@ -122,7 +122,8 @@
   color: #9b1c1c;
 }
 
-/* Phone */
+
+/* Phones (600px and below) */
 @media (max-width: 600px) {
   .history .card { padding: 1.1rem; }
   .history .filters { flex-direction: column; align-items: stretch; gap: 1rem; }

@@ -6,16 +6,16 @@ export default function FormField({ label, error, hint, children, required = tru
   const describedBy = [error && `${id}-err`, hint && `${id}-hint`].filter(Boolean).join(" ") || undefined;
 
   return (
-    <div className={`field${error ? " field--error" : ""}`}>
-      <label htmlFor={id} className="field__label">
-        {label} {required && <span className="field__req">*</span>}
+    <div className={`field${error ? " invalid" : ""}`}>
+      <label htmlFor={id} className="label">
+        {label} {required && <span className="req">*</span>}
       </label>
       
       {/* Renders the input or select element passed as a function */}
       {children({ id, "aria-invalid": !!error, "aria-describedby": describedBy })}
       
-      {hint && !error && <p id={`${id}-hint`} className="field__hint">{hint}</p>}
-      {error && <p id={`${id}-err`} className="field__error" role="alert">{error}</p>}
+      {hint && !error && <p id={`${id}-hint`} className="hint">{hint}</p>}
+      {error && <p id={`${id}-err`} className="error" role="alert">{error}</p>}
     </div>
   );
 }

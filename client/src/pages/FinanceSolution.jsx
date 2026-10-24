@@ -24,11 +24,11 @@ export default function FinanceSolution() {
       {/* HERO SECTION */}
 
       <section className="hero financehero">
-        <div className="container hero__grid">
+        <div className="container grid">
 
-          <div className="hero__copy">
+          <div className="copy">
 
-            <div className="hero__badge">
+            <div className="badge">
               Solutions · Finance
             </div>
 
@@ -38,10 +38,10 @@ export default function FinanceSolution() {
               Optimize your investment portfolio with mathematical precision.
             </p>
 
-            <div className="hero__actions">
+            <div className="actions">
               <Link
                 to="/register"
-                className="btn btn--primary btn--lg"
+                className="btn primary large"
               >
                 Get Started
               </Link>
@@ -49,11 +49,11 @@ export default function FinanceSolution() {
 
           </div>
 
-          <div className="hero__media">
+          <div className="media">
             <img
               src="/herofinance.png"
               alt="Finance Optimization"
-              className="finance__hero-img"
+              className="hero-img"
             />
           </div>
 
@@ -65,7 +65,7 @@ export default function FinanceSolution() {
       <section className="section financecards">
         <div className="container">
 
-          <ul className="card-grid card-grid--3">
+          <ul className="card-grid 3">
 
             {CARDS.map((card) => (
               <li key={card.title} className="info-card">
@@ -81,17 +81,17 @@ export default function FinanceSolution() {
 
       {/* OPTIMIZATION MODEL SECTION */}
 
-      <section className="section section--band finance__band">
+      <section className="section band">
 
-        <div className="container finance__split">
+        <div className="container split">
 
           <div>
 
-            <h2 className="section-title finance__title">
+            <h2 className="section-title title">
               What the model looks like
             </h2>
 
-            <p className="finance__text">
+            <p className="text">
               Optimum formulates your inputs as a linear program:
               one decision variable per asset, an objective that
               maximizes expected return, and constraints for your
@@ -102,7 +102,7 @@ export default function FinanceSolution() {
 
           <div>
 
-            <pre className="finance__code">
+            <pre className="code">
               <code>{`maximize  Σ rᵢ · xᵢ
 subject to Σ xᵢ ≤ Budget
            minᵢ ≤ xᵢ ≤ maxᵢ`}</code>

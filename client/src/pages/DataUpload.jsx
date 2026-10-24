@@ -871,7 +871,7 @@ export default function DataUpload() {
 
       {/* Header */}
 
-      <header className="data-upload__header">
+      <header className="header">
         <div>
           <h1>Upload Portfolio Data</h1>
 
@@ -883,7 +883,7 @@ export default function DataUpload() {
         </div>
 
         <Link
-          className="btn btn--ghost"
+          className="btn ghost"
           to="/dashboard/model-builder"
         >
           Open Model Builder
@@ -894,7 +894,7 @@ export default function DataUpload() {
 
       {message && (
         <div
-          className="alert alert--success"
+          className="alert success"
           role="status"
         >
           {message}
@@ -903,7 +903,7 @@ export default function DataUpload() {
 
       {error && (
         <div
-          className="alert alert--error"
+          className="alert error"
           role="alert"
         >
           {error}
@@ -912,8 +912,8 @@ export default function DataUpload() {
 
       {/* Project selection */}
 
-      <section className="data-upload__section">
-        <div className="data-upload__section-head">
+      <section className="section">
+        <div className="section-head">
           <div>
             <h2>1. Select Project</h2>
 
@@ -946,7 +946,7 @@ export default function DataUpload() {
         </select>
 
         {selectedProject && (
-          <p className="data-upload__hint">
+          <p className="hint">
             Dataset destination:{" "}
             <strong>
               {selectedProject.project_name}
@@ -957,8 +957,8 @@ export default function DataUpload() {
 
       {/* File upload */}
 
-      <section className="data-upload__section">
-        <div className="data-upload__section-head">
+      <section className="section">
+        <div className="section-head">
           <div>
             <h2>2. Upload Dataset</h2>
 
@@ -970,7 +970,7 @@ export default function DataUpload() {
           </div>
         </div>
 
-        <div className="data-upload__dropzone">
+        <div className="dropzone">
           <input
             ref={fileInputRef}
             id="portfolio-file"
@@ -981,7 +981,7 @@ export default function DataUpload() {
 
           <label
             htmlFor="portfolio-file"
-            className="btn btn--primary"
+            className="btn primary"
           >
             Choose CSV / JSON
           </label>
@@ -990,7 +990,7 @@ export default function DataUpload() {
         </div>
 
         {parsing && (
-          <p className="data-upload__status">
+          <p className="status">
             Reading and validating file…
           </p>
         )}
@@ -999,8 +999,8 @@ export default function DataUpload() {
       {/* Dataset preview */}
 
       {rows.length > 0 && (
-        <section className="data-upload__section">
-          <div className="data-upload__section-head">
+        <section className="section">
+          <div className="section-head">
             <div>
               <h2>3. Preview</h2>
 
@@ -1011,7 +1011,7 @@ export default function DataUpload() {
             </div>
 
             <button
-              className="btn btn--primary"
+              className="btn primary"
               type="button"
               onClick={confirmUpload}
               disabled={
@@ -1031,7 +1031,7 @@ export default function DataUpload() {
 
           {warnings.length > 0 && (
             <div
-              className="data-upload__warnings"
+              className="warnings"
               role="alert"
             >
               <strong>
@@ -1059,8 +1059,8 @@ export default function DataUpload() {
 
           {/* Preview table */}
 
-          <div className="data-upload__table-wrap">
-            <table className="data-upload__table">
+          <div className="table-wrap">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Asset</th>
@@ -1094,7 +1094,7 @@ export default function DataUpload() {
           </div>
 
           {rows.length > 25 && (
-            <p className="data-upload__hint">
+            <p className="hint">
               Showing the first 25 rows
               in the preview.
             </p>
@@ -1105,8 +1105,8 @@ export default function DataUpload() {
       {/* Create model from dataset */}
 
       {maker && (
-        <section className="data-upload__section maker">
-          <div className="data-upload__section-head">
+        <section className="section maker">
+          <div className="section-head">
             <div>
               <h2>
                 Create a model from{" "}
@@ -1246,8 +1246,8 @@ export default function DataUpload() {
 
             {/* Asset table */}
 
-            <div className="data-upload__table-wrap">
-              <table className="data-upload__table">
+            <div className="table-wrap">
+              <table className="table">
                 <thead>
                   <tr>
                     <th>Asset</th>
@@ -1355,7 +1355,7 @@ export default function DataUpload() {
             <h3>Constraints</h3>
 
             {makerCons.length === 0 && (
-              <p className="data-upload__hint">
+              <p className="hint">
                 No optional constraints added.
                 The model will use the asset
                 allocation limits and the
@@ -1453,7 +1453,7 @@ export default function DataUpload() {
               + Add constraint
             </button>
 
-            <p className="data-upload__hint">
+            <p className="hint">
               Enter readable targets:
               5 means 5% portfolio return,
               and 4.5 means a portfolio risk
@@ -1468,7 +1468,7 @@ export default function DataUpload() {
             <div className="buttons">
               <button
                 type="submit"
-                className="btn btn--primary"
+                className="btn primary"
                 disabled={making}
               >
                 {making
@@ -1478,7 +1478,7 @@ export default function DataUpload() {
 
               <button
                 type="button"
-                className="btn btn--ghost btn--dark"
+                className="btn ghost dark"
                 onClick={() => {
                   setMaker(null);
                   setMakerAssets([]);
@@ -1497,8 +1497,8 @@ export default function DataUpload() {
       {/* Attached datasets */}
 
       {projectId && (
-        <section className="data-upload__section">
-          <div className="data-upload__section-head">
+        <section className="section">
+          <div className="section-head">
             <div>
               <h2>Attached Datasets</h2>
 
@@ -1510,11 +1510,11 @@ export default function DataUpload() {
           </div>
 
           {datasets.length === 0 ? (
-            <p className="data-upload__empty">
+            <p className="empty">
               No datasets uploaded yet.
             </p>
           ) : (
-            <ul className="data-upload__dataset-list">
+            <ul className="dataset-list">
               {datasets.map((dataset) => (
                 <li key={dataset.dataset_id}>
                   <div>

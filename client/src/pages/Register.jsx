@@ -33,7 +33,7 @@ export default function Register() {
 
   return (
     <div className="wrapper">
-      <div className="card card--wide">
+      <div className="card wide">
         <h1>Create an Account</h1>
         <h2>Join Optimum and start optimizing today.</h2>
 

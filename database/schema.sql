@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS Portfolio_Rows (
 );
 
 -- Optimization Runs Table /space for  multiple solver engines
-CREATE TABLE IF NOT EXISTS Optimization_Runs (
+CREATE TABLE IF NOT EXISTS optimization_runs (
     run_id INT PRIMARY KEY AUTO_INCREMENT,
     project_id INT NOT NULL,
     model_id INT NOT NULL,
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS Optimization_Results (
 
     CONSTRAINT fk_results_run
         FOREIGN KEY (run_id)
-        REFERENCES Optimization_Runs(run_id)
+        REFERENCES optimization_runs(run_id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_results_asset
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS Asset_Allocations (
 
     CONSTRAINT fk_alloc_run
         FOREIGN KEY (run_id)
-        REFERENCES Optimization_Runs(run_id)
+        REFERENCES optimization_runs(run_id)
         ON DELETE CASCADE
 );
 
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS Run_Constraint_Results (
 
     CONSTRAINT fk_cres_run
         FOREIGN KEY (run_id)
-        REFERENCES Optimization_Runs(run_id)
+        REFERENCES optimization_runs(run_id)
         ON DELETE CASCADE
 );
 --  Audit Logs Table for tracking user actions and system events as Admin

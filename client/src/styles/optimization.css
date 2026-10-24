@@ -4,50 +4,50 @@
   margin: 0;
 }
 
-.optimization__header {
+.optimization .header {
   margin-bottom: 2rem;
 }
 
-.optimization__header h1 {
+.optimization .header h1 {
   margin-bottom: 0.5rem;
 }
 
-.optimization__header p {
+.optimization .header p {
   color: #5c584c;
 }
 
-.optimization__card {
+.optimization .card {
   background: #fff;
   border: 1px solid #ddd8cc;
   border-radius: 12px;
   padding: 2rem;
 }
 
-.optimization__summary {
+.optimization .summary {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin: 1.5rem 0;
 }
 
-.optimization__summary div {
+.optimization .summary div {
   padding: 1rem;
   border: 1px solid #e4e0d8;
   border-radius: 8px;
 }
 
-.optimization__summary span {
+.optimization .summary span {
   display: block;
   font-size: 0.85rem;
   color: #666;
   margin-bottom: 0.4rem;
 }
 
-.optimization__summary strong {
+.optimization .summary strong {
   font-size: 1.1rem;
 }
 
-.optimization__error {
+.optimization .error {
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;
@@ -55,58 +55,75 @@
   color: #9b1c1c;
 }
 
-.optimization__card--spaced {
+.optimization .card.spaced {
   margin-bottom: 1.5rem;
 }
 
-.optimization__field {
+.optimization .group {
   margin-top: 0.75rem;
 }
 
-.optimization__label {
+.optimization .label {
   display: block;
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 0.35rem;
 }
 
-.optimization__select {
+.optimization .select {
   padding: 0.5rem;
   border: 1.5px solid #d8d3c4;
   border-radius: 6px;
   font: inherit;
 }
 
-.optimization__select--full {
+.optimization .select.full {
   width: 100%;
 }
 
-.optimization__run {
+.optimization .run {
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid #e4e0d8;
 }
 
-.optimization__run h3 {
+.optimization .run h3 {
   margin-bottom: 0.25rem;
 }
 
-.optimization__run .optimization__error {
+.optimization .run .error {
   margin: 1rem 0 0;
 }
 
-.optimization__run .optimization__error p {
+.optimization .run .error p {
   margin: 0.4rem 0 0.9rem;
 }
 
-.optimization__actions {
+.optimization .actions {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
-@media (max-width: 700px) {
-  .optimization__summary {
+/* Phones (600px and below) */
+@media (max-width: 600px) {
+  .optimization .summary {
     grid-template-columns: 1fr;
+  }
+
+  .optimization .card {
+    padding: 1rem;
+  }
+
+  .optimization .header {
+    margin-bottom: 1.25rem;
+  }
+
+  .optimization .actions .btn {
+    flex: 1 1 100%;
+  }
+
+  .optimization .select {
+    width: 100%;
   }
 }

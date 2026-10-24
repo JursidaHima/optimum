@@ -92,17 +92,17 @@ export default function AdminUsers() {
 
   return (
     <section className="admin">
-      <header className="admin__header">
+      <header className="header">
         <h1>Users</h1>
         <p>View and edit Optimizers, review their activity, and manage account status.</p>
       </header>
 
-      {notice && <p className="alert alert--success" role="status">{notice}</p>}
-      {error && <p className="alert alert--error" role="alert">{error}</p>}
+      {notice && <p className="alert success" role="status">{notice}</p>}
+      {error && <p className="alert error" role="alert">{error}</p>}
 
       {/* Filter Controls */}
-      <div className="admin__card admin__filters">
-        <label className="admin__filter">
+      <div className="card filters">
+        <label className="filter">
           Search
           <input
             type="search"
@@ -111,7 +111,7 @@ export default function AdminUsers() {
             placeholder="Name or email"
           />
         </label>
-        <label className="admin__filter">
+        <label className="filter">
           Status
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">All</option>
@@ -123,10 +123,10 @@ export default function AdminUsers() {
 
       {/* Edit User Form Modal/Card */}
       {editing && (
-        <form className="admin__card" onSubmit={onSave} noValidate>
+        <form className="card" onSubmit={onSave} noValidate>
           <h2>Edit {editing.email}</h2>
-          {formError.message && <p className="alert alert--error" role="alert">{formError.message}</p>}
-          <div className="admin__form-grid">
+          {formError.message && <p className="alert error" role="alert">{formError.message}</p>}
+          <div className="form-grid">
             <FormField label="Name">
               {(p) => <input {...p} type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />}
             </FormField>
@@ -137,26 +137,26 @@ export default function AdminUsers() {
               {(p) => <input {...p} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />}
             </FormField>
           </div>
-          <div className="admin__actions">
-            <button type="submit" className="btn btn--primary" disabled={busy}>Save changes</button>
-            <button type="button" className="btn btn--ghost btn--dark" onClick={() => setEditing(null)}>Cancel</button>
+          <div className="actions">
+            <button type="submit" className="btn primary" disabled={busy}>Save changes</button>
+            <button type="button" className="btn ghost dark" onClick={() => setEditing(null)}>Cancel</button>
           </div>
         </form>
       )}
 
       {/* User Detail & Activity Panel */}
       {detail && (
-        <div className="admin__card">
-          <div className="admin__card-head">
+        <div className="card">
+          <div className="card-head">
             <h2>Activity — {detail.user.name} {detail.user.surname}</h2>
-            <button type="button" className="btn btn--ghost btn--sm btn--dark" onClick={() => setDetail(null)}>Close</button>
+            <button type="button" className="btn ghost small dark" onClick={() => setDetail(null)}>Close</button>
           </div>
 
           <h3>Recent runs</h3>
           {detail.runs.length === 0 ? (
-            <p className="admin__muted">No runs yet.</p>
+            <p className="muted">No runs yet.</p>
           ) : (
-            <ul className="admin__list">
+            <ul className="list">
               {detail.runs.map((r) => (
                 <li key={r.run_id}>
                   Run #{r.run_id} · {r.project_name} / {r.model_name} · <StatusBadge status={r.status} /> · {formatDateTime(r.created_at)}
@@ -167,9 +167,9 @@ export default function AdminUsers() {
 
           <h3>Recent actions</h3>
           {detail.activity.length === 0 ? (
-            <p className="admin__muted">No actions recorded.</p>
+            <p className="muted">No actions recorded.</p>
           ) : (
-            <ul className="admin__list">
+            <ul className="list">
               {detail.activity.map((a) => (
                 <li key={a.log_id}>
                   {formatDateTime(a.timestamp)} · <code>{a.action_type}</code> {a.details ? `· ${a.details}` : ""}
@@ -181,14 +181,14 @@ export default function AdminUsers() {
       )}
 
       {/* Users Data Table */}
-      <div className="admin__card">
+      <div className="card">
         {!users ? (
           <p>Loading…</p>
         ) : users.length === 0 ? (
-          <p className="admin__muted">No users match these filters.</p>
+          <p className="muted">No users match these filters.</p>
         ) : (
-          <div className="admin__table-wrap">
-            <table className="admin__table">
+          <div className="table-wrap">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -210,17 +210,17 @@ export default function AdminUsers() {
                       <td>{u.email}</td>
                       <td>{u.role_name}</td>
                       <td>
-                        <span className={`admin__pill admin__pill--${u.status.toLowerCase()}`}>{u.status}</span>
+                        <span className={`pill ${u.status.toLowerCase()}`}>{u.status}</span>
                       </td>
                       <td>{u.project_count}</td>
                       <td>{u.run_count}</td>
                       <td>{formatDateTime(u.last_login)}</td>
-                      <td className="admin__row-actions">
-                        {/* <button type="button" className="admin__link-btn" onClick={() => openDetail(u)}>Activity</button> */}
+                      <td className="row-actions">
+                        {/* <button type="button" className="text-btn" onClick={() => openDetail(u)}>Activity</button> */}
                         {isOptimizer && (
                           <>
-                            <button type="button" className="admin__link-btn" onClick={() => openEdit(u)}>Edit</button>
-                            <button type="button" className="admin__link-btn admin__link-btn--danger" onClick={() => toggleStatus(u)}>
+                            <button type="button" className="text-btn" onClick={() => openEdit(u)}>Edit</button>
+                            <button type="button" className="text-btn danger" onClick={() => toggleStatus(u)}>
                               {u.status === "Active" ? "Suspend" : "Reactivate"}
                             </button>
                           </>

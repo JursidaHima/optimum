@@ -1,6 +1,5 @@
-/* Projects page — styled to match Data Upload / Model Builder / Admin pages. */
 
-/* ---------- Page header ---------- */
+/*  Page header  */
 .page-head {
   display: flex;
   justify-content: space-between;
@@ -14,7 +13,7 @@
   margin: 0;
 }
 
-/* ---------- Form panel (New / Edit project) ---------- */
+/*  Form new edit project */
 .panel {
   background: #fff;
   border: 1px solid #ddd;
@@ -48,7 +47,7 @@
   border-top: 1px solid #e4e0d8;
 }
 
-/* ---------- Empty state ---------- */
+/*  Empty state  */
 .empty-state {
   text-align: center;
   padding: 2.5rem 1.5rem;
@@ -61,7 +60,7 @@
   margin: 0;
 }
 
-/* ---------- Project cards ---------- */
+/*  Project cards  */
 /* One project per row, stacked vertically (list, not a card grid) */
 .entity-grid {
   list-style: none;
@@ -109,7 +108,7 @@
   line-height: 1.5;
 }
 
-.entity-card__actions {
+.entity-card .actions {
   grid-area: actions;
   display: flex;
   gap: 0.5rem;
@@ -117,43 +116,42 @@
   align-items: center;
 }
 
-/* ---------- Buttons on light backgrounds ----------
-   The global .btn--ghost / .btn--sm are built for the dark sidebar (white text),
-   so they would be invisible on white cards. Override them here only. */
-.entity-card .btn--ghost,
-.panel .btn--ghost {
+/*  Buttons on light backgrounds */
+.entity-card .btn.ghost,
+.panel .btn.ghost {
   background: #fff;
   border-color: #d8d3c4;
   color: #12263f;
 }
 
-.entity-card .btn--ghost:hover,
-.panel .btn--ghost:hover {
+.entity-card .btn.ghost:hover,
+.panel .btn.ghost:hover {
   background: #f2f0e8;
   border-color: #12263f;
 }
 
-/* Delete = danger tone (3rd button in the card) */
-.entity-card__actions .btn--ghost:last-child {
+/* Delete  */
+.entity-card .actions .btn.ghost:last-child {
   color: #b3331f;
 }
 
-.entity-card__actions .btn--ghost:last-child:hover {
+.entity-card .actions .btn.ghost:last-child:hover {
   background: #fbeaea;
   border-color: #b3331f;
 }
 
-.entity-card .btn--primary,
-.panel .btn--primary {
+.entity-card .btn.primary,
+.panel .btn.primary {
   color: #fff;
 }
 
-.entity-card .btn--sm {
+.entity-card .btn.small {
   padding: 0.45rem 1rem;
   font-size: 0.85rem;
 }
 
-@media (max-width: 700px) {
+/* Phones (600px and below) */
+@media (max-width: 600px) {
   .page-head {
     flex-direction: column;
     align-items: stretch;
@@ -168,7 +166,7 @@
     row-gap: 0.5rem;
   }
 
-  .entity-card__actions {
+  .entity-card .actions {
     flex-wrap: wrap;
     margin-top: 0.5rem;
   }

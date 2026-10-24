@@ -10,7 +10,7 @@ export default function Header() {
         <img 
           src="/logofin.jpeg" 
           alt="Optimum" 
-          className="logo__img"
+          className="img"
         />
       </Link>
 
@@ -21,11 +21,11 @@ export default function Header() {
         <NavLink to="/documentation">Documentation</NavLink>
         
         {isAuthenticated ? (
-          <Link to={user?.role === "Admin" ? "/admin" : "/dashboard"} className="btn--sm">Dashboard</Link>
+          <Link to={user?.role === "Admin" ? "/admin" : "/dashboard"} className="small">Dashboard</Link>
         ) : (
           <>
             <Link to="/login">Log in</Link>
-            {/* <Link to="/register" className="btn--sm">Get Started</Link> */}
+            {/* <Link to="/register" className="small">Get Started</Link> */}
           </>
         )}
       </nav>
