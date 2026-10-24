@@ -175,7 +175,7 @@ h1, h2, h3 {
   gap: 1.5rem;
 }
 
-.card-grid.3 {
+.card-grid--3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -209,7 +209,7 @@ h1, h2, h3 {
     gap: 1.5rem;
   }
 
-  .card-grid.3 {
+  .card-grid--3 {
     grid-template-columns: 1fr;
     gap: 1rem;
   }

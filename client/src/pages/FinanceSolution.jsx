@@ -65,7 +65,7 @@ export default function FinanceSolution() {
       <section className="section financecards">
         <div className="container">
 
-          <ul className="card-grid 3">
+          <ul className="card-grid card-grid--3">
 
             {CARDS.map((card) => (
               <li key={card.title} className="info-card">
